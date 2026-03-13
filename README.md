@@ -64,6 +64,17 @@ npm run build
 
 `npm run build` requires production-style env vars. During verification, stub values are enough for Google, Resend, and TMDB because the build only needs schema-valid configuration.
 
+## Production deployment
+
+- Commit and keep the `prisma/migrations` directory in Git so Vercel can run real schema migrations.
+- For Vercel, use:
+
+```bash
+npm run vercel-build
+```
+
+- Set `DATABASE_URL` to a pooled PostgreSQL connection string in production. For Supabase, use the Supavisor session pooler rather than the direct `db.<project>.supabase.co:5432` host.
+
 ## Product scope
 
 - Private multi-list watchlists
