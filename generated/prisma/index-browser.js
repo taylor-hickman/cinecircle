@@ -199,6 +199,7 @@ exports.Prisma.WatchlistItemScalarFieldEnum = {
   title: 'title',
   releaseYear: 'releaseYear',
   posterPath: 'posterPath',
+  backdropPath: 'backdropPath',
   overview: 'overview',
   watchedAt: 'watchedAt',
   addedById: 'addedById',

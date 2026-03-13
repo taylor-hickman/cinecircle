@@ -10,6 +10,7 @@ describe("mapTmdbMovie", () => {
         title: "Alien",
         overview: "Xenomorph problems.",
         poster_path: "/alien.jpg",
+        backdrop_path: "/alien-backdrop.jpg",
         release_date: "1979-05-25",
       }),
     ).toEqual({
@@ -17,6 +18,7 @@ describe("mapTmdbMovie", () => {
       title: "Alien",
       overview: "Xenomorph problems.",
       posterPath: "/alien.jpg",
+      backdropPath: "/alien-backdrop.jpg",
       releaseYear: 1979,
     });
   });
@@ -28,6 +30,7 @@ describe("mapTmdbMovie", () => {
         title: "Unknown Release",
         overview: "",
         poster_path: null,
+        backdrop_path: null,
         release_date: null,
       }),
     ).toEqual({
@@ -35,6 +38,7 @@ describe("mapTmdbMovie", () => {
       title: "Unknown Release",
       overview: "",
       posterPath: null,
+      backdropPath: null,
       releaseYear: null,
     });
   });

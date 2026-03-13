@@ -19,8 +19,8 @@ export default async function HomePage() {
             CineCircle
           </p>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-            Build a shared movie circle, invite people, and decide what to
-            watch next.
+            Build a shared movie circle, invite people, and decide what to watch
+            next.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-stone-300">
             This MVP focuses on the backend workflow: private lists, email

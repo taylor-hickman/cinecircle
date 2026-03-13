@@ -124,6 +124,7 @@ model WatchlistItem {
   title       String
   releaseYear Int?
   posterPath  String?
+  backdropPath String?
   overview    String?
   watchedAt   DateTime?
   addedById   String

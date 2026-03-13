@@ -9476,6 +9476,7 @@ export namespace Prisma {
     title: string | null
     releaseYear: number | null
     posterPath: string | null
+    backdropPath: string | null
     overview: string | null
     watchedAt: Date | null
     addedById: string | null
@@ -9493,6 +9494,7 @@ export namespace Prisma {
     title: string | null
     releaseYear: number | null
     posterPath: string | null
+    backdropPath: string | null
     overview: string | null
     watchedAt: Date | null
     addedById: string | null
@@ -9510,6 +9512,7 @@ export namespace Prisma {
     title: number
     releaseYear: number
     posterPath: number
+    backdropPath: number
     overview: number
     watchedAt: number
     addedById: number
@@ -9541,6 +9544,7 @@ export namespace Prisma {
     title?: true
     releaseYear?: true
     posterPath?: true
+    backdropPath?: true
     overview?: true
     watchedAt?: true
     addedById?: true
@@ -9558,6 +9562,7 @@ export namespace Prisma {
     title?: true
     releaseYear?: true
     posterPath?: true
+    backdropPath?: true
     overview?: true
     watchedAt?: true
     addedById?: true
@@ -9575,6 +9580,7 @@ export namespace Prisma {
     title?: true
     releaseYear?: true
     posterPath?: true
+    backdropPath?: true
     overview?: true
     watchedAt?: true
     addedById?: true
@@ -9679,6 +9685,7 @@ export namespace Prisma {
     title: string
     releaseYear: number | null
     posterPath: string | null
+    backdropPath: string | null
     overview: string | null
     watchedAt: Date | null
     addedById: string
@@ -9715,6 +9722,7 @@ export namespace Prisma {
     title?: boolean
     releaseYear?: boolean
     posterPath?: boolean
+    backdropPath?: boolean
     overview?: boolean
     watchedAt?: boolean
     addedById?: boolean
@@ -9734,6 +9742,7 @@ export namespace Prisma {
     title?: boolean
     releaseYear?: boolean
     posterPath?: boolean
+    backdropPath?: boolean
     overview?: boolean
     watchedAt?: boolean
     addedById?: boolean
@@ -9753,6 +9762,7 @@ export namespace Prisma {
     title?: boolean
     releaseYear?: boolean
     posterPath?: boolean
+    backdropPath?: boolean
     overview?: boolean
     watchedAt?: boolean
     addedById?: boolean
@@ -9772,6 +9782,7 @@ export namespace Prisma {
     title?: boolean
     releaseYear?: boolean
     posterPath?: boolean
+    backdropPath?: boolean
     overview?: boolean
     watchedAt?: boolean
     addedById?: boolean
@@ -9779,7 +9790,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "releaseYear" | "posterPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
+  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "releaseYear" | "posterPath" | "backdropPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
   export type WatchlistItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     addedBy?: boolean | UserDefaultArgs<ExtArgs>
     watchlist?: boolean | WatchlistDefaultArgs<ExtArgs>
@@ -9809,6 +9820,7 @@ export namespace Prisma {
       title: string
       releaseYear: number | null
       posterPath: string | null
+      backdropPath: string | null
       overview: string | null
       watchedAt: Date | null
       addedById: string
@@ -10248,6 +10260,7 @@ export namespace Prisma {
     readonly title: FieldRef<"WatchlistItem", 'String'>
     readonly releaseYear: FieldRef<"WatchlistItem", 'Int'>
     readonly posterPath: FieldRef<"WatchlistItem", 'String'>
+    readonly backdropPath: FieldRef<"WatchlistItem", 'String'>
     readonly overview: FieldRef<"WatchlistItem", 'String'>
     readonly watchedAt: FieldRef<"WatchlistItem", 'DateTime'>
     readonly addedById: FieldRef<"WatchlistItem", 'String'>
@@ -10780,6 +10793,7 @@ export namespace Prisma {
     title: 'title',
     releaseYear: 'releaseYear',
     posterPath: 'posterPath',
+    backdropPath: 'backdropPath',
     overview: 'overview',
     watchedAt: 'watchedAt',
     addedById: 'addedById',
@@ -11396,6 +11410,7 @@ export namespace Prisma {
     title?: StringFilter<"WatchlistItem"> | string
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
+    backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
     watchedAt?: DateTimeNullableFilter<"WatchlistItem"> | Date | string | null
     addedById?: StringFilter<"WatchlistItem"> | string
@@ -11415,6 +11430,7 @@ export namespace Prisma {
     title?: SortOrder
     releaseYear?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
+    backdropPath?: SortOrderInput | SortOrder
     overview?: SortOrderInput | SortOrder
     watchedAt?: SortOrderInput | SortOrder
     addedById?: SortOrder
@@ -11438,6 +11454,7 @@ export namespace Prisma {
     title?: StringFilter<"WatchlistItem"> | string
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
+    backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
     watchedAt?: DateTimeNullableFilter<"WatchlistItem"> | Date | string | null
     addedById?: StringFilter<"WatchlistItem"> | string
@@ -11457,6 +11474,7 @@ export namespace Prisma {
     title?: SortOrder
     releaseYear?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
+    backdropPath?: SortOrderInput | SortOrder
     overview?: SortOrderInput | SortOrder
     watchedAt?: SortOrderInput | SortOrder
     addedById?: SortOrder
@@ -11482,6 +11500,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"WatchlistItem"> | string
     releaseYear?: IntNullableWithAggregatesFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
+    backdropPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     overview?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     watchedAt?: DateTimeNullableWithAggregatesFilter<"WatchlistItem"> | Date | string | null
     addedById?: StringWithAggregatesFilter<"WatchlistItem"> | string
@@ -12003,6 +12022,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     createdAt?: Date | string
@@ -12021,6 +12041,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     addedById: string
@@ -12037,6 +12058,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12055,6 +12077,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     addedById?: StringFieldUpdateOperationsInput | string
@@ -12072,6 +12095,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     addedById: string
@@ -12088,6 +12112,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12104,6 +12129,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     addedById?: StringFieldUpdateOperationsInput | string
@@ -12608,6 +12634,7 @@ export namespace Prisma {
     title?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
+    backdropPath?: SortOrder
     overview?: SortOrder
     watchedAt?: SortOrder
     addedById?: SortOrder
@@ -12631,6 +12658,7 @@ export namespace Prisma {
     title?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
+    backdropPath?: SortOrder
     overview?: SortOrder
     watchedAt?: SortOrder
     addedById?: SortOrder
@@ -12648,6 +12676,7 @@ export namespace Prisma {
     title?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
+    backdropPath?: SortOrder
     overview?: SortOrder
     watchedAt?: SortOrder
     addedById?: SortOrder
@@ -13726,6 +13755,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     createdAt?: Date | string
@@ -13743,6 +13773,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     createdAt?: Date | string
@@ -13935,6 +13966,7 @@ export namespace Prisma {
     title?: StringFilter<"WatchlistItem"> | string
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
+    backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
     watchedAt?: DateTimeNullableFilter<"WatchlistItem"> | Date | string | null
     addedById?: StringFilter<"WatchlistItem"> | string
@@ -14013,6 +14045,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     createdAt?: Date | string
@@ -14029,6 +14062,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     addedById: string
@@ -14623,6 +14657,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     createdAt?: Date | string
@@ -14775,6 +14810,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14792,6 +14828,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14808,6 +14845,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14859,6 +14897,7 @@ export namespace Prisma {
     title: string
     releaseYear?: number | null
     posterPath?: string | null
+    backdropPath?: string | null
     overview?: string | null
     watchedAt?: Date | string | null
     addedById: string
@@ -14919,6 +14958,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14935,6 +14975,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     addedById?: StringFieldUpdateOperationsInput | string
@@ -14951,6 +14992,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
+    backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
     watchedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     addedById?: StringFieldUpdateOperationsInput | string

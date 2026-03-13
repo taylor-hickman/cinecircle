@@ -41,6 +41,18 @@ export const watchlistsRouter = createTRPCRouter({
             role: true,
           },
         },
+        items: {
+          orderBy: {
+            position: "asc",
+          },
+          take: 3,
+          select: {
+            tmdbId: true,
+            title: true,
+            posterPath: true,
+            backdropPath: true,
+          },
+        },
       },
       orderBy: {
         updatedAt: "desc",
@@ -57,6 +69,7 @@ export const watchlistsRouter = createTRPCRouter({
       viewerRole: watchlist.members[0]?.role ?? WatchlistRole.COLLABORATOR,
       itemCount: watchlist._count.items,
       memberCount: watchlist._count.members,
+      previewItems: watchlist.items,
     }));
   }),
 

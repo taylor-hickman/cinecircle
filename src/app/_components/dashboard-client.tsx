@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { TmdbBackdrop, TmdbPoster } from "~/app/_components/tmdb-media";
 import { api } from "~/trpc/react";
 
 export function DashboardClient() {
@@ -85,8 +86,8 @@ export function DashboardClient() {
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold text-white">Your lists</h2>
             <p className="text-sm text-stone-400">
-              Owned and shared watchlists are all private. Collaborators can add
-              and reorder movies.
+              Owned and shared watchlists stay private. Posters and cover art
+              now preview what each list actually feels like.
             </p>
           </div>
 
@@ -109,49 +110,86 @@ export function DashboardClient() {
             </div>
           ) : null}
 
-          <div className="grid gap-4">
-            {watchlistsQuery.data?.map((watchlist) => (
-              <Link
-                key={watchlist.id}
-                href={`/lists/${watchlist.id}`}
-                className="rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:border-white/20 hover:bg-white/10"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-lg font-semibold text-white">
-                        {watchlist.name}
-                      </h3>
-                      <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
-                        {watchlist.viewerRole === "OWNER"
-                          ? "Owner"
-                          : "Collaborator"}
-                      </span>
-                    </div>
-                    {watchlist.description ? (
-                      <p className="max-w-2xl text-sm text-stone-400">
-                        {watchlist.description}
-                      </p>
-                    ) : null}
-                  </div>
+          <div className="grid gap-5">
+            {watchlistsQuery.data?.map((watchlist) => {
+              const leadPreview =
+                watchlist.previewItems.find((item) => item.backdropPath) ??
+                watchlist.previewItems[0];
 
-                  <dl className="grid grid-cols-2 gap-3 text-sm text-stone-300">
-                    <div className="rounded-2xl border border-white/10 px-3 py-2">
-                      <dt className="text-stone-500">Movies</dt>
-                      <dd className="text-base font-semibold text-white">
-                        {watchlist.itemCount}
-                      </dd>
+              return (
+                <Link
+                  key={watchlist.id}
+                  href={`/lists/${watchlist.id}`}
+                  className="block overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 transition hover:border-white/20 hover:bg-white/10"
+                >
+                  <TmdbBackdrop
+                    title={watchlist.name}
+                    backdropPath={leadPreview?.backdropPath ?? null}
+                    posterPath={leadPreview?.posterPath ?? null}
+                    className="min-h-[19rem]"
+                  >
+                    <div className="flex h-full flex-col justify-between gap-6 p-5 sm:p-6">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1 text-xs tracking-[0.18em] text-stone-200 uppercase">
+                          {watchlist.viewerRole === "OWNER"
+                            ? "Owner"
+                            : "Collaborator"}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-xs text-stone-200">
+                          {watchlist.itemCount} movies
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-xs text-stone-200">
+                          {watchlist.memberCount} members
+                        </span>
+                      </div>
+
+                      <div className="space-y-5">
+                        <div className="space-y-2">
+                          <h3 className="text-2xl font-semibold text-white">
+                            {watchlist.name}
+                          </h3>
+                          <p className="max-w-2xl text-sm text-stone-200">
+                            {watchlist.description ??
+                              (watchlist.previewItems.length > 0
+                                ? "Artwork-led queue with live TMDB search and shared notes."
+                                : "Add movies to turn this empty shell into a visual watchlist.")}
+                          </p>
+                        </div>
+
+                        {watchlist.previewItems.length > 0 ? (
+                          <div className="space-y-3">
+                            <p className="text-xs tracking-[0.22em] text-stone-400 uppercase">
+                              Queue preview
+                            </p>
+                            <div className="flex flex-wrap gap-3">
+                              {watchlist.previewItems.map((item) => (
+                                <div
+                                  key={`${watchlist.id}-${item.tmdbId}`}
+                                  className="w-[72px] shrink-0"
+                                >
+                                  <TmdbPoster
+                                    title={item.title}
+                                    posterPath={item.posterPath}
+                                    backdropPath={item.backdropPath}
+                                    size="thumb"
+                                    className="aspect-[2/3] rounded-[1rem] border border-white/10"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/20 p-4 text-sm text-stone-300">
+                            No movies yet. Open the list and start typing to get
+                            live TMDB suggestions.
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="rounded-2xl border border-white/10 px-3 py-2">
-                      <dt className="text-stone-500">Members</dt>
-                      <dd className="text-base font-semibold text-white">
-                        {watchlist.memberCount}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </Link>
-            ))}
+                  </TmdbBackdrop>
+                </Link>
+              );
+            })}
           </div>
         </section>
       </section>

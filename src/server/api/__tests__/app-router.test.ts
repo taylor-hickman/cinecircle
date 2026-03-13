@@ -81,6 +81,7 @@ describe("app router", () => {
       title: "The Thing",
       overview: "Isolation and paranoia.",
       posterPath: "/thing.jpg",
+      backdropPath: "/thing-backdrop.jpg",
       releaseYear: 1982,
     });
 
@@ -242,6 +243,120 @@ describe("app router", () => {
     });
   });
 
+  it("persists poster and backdrop paths when adding a movie", async () => {
+    db.watchlistMember.findUnique.mockResolvedValue({
+      id: MEMBER_ID,
+      watchlistId: WATCHLIST_ID,
+      userId: "user_1",
+      role: WatchlistRole.OWNER,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      watchlist: {
+        id: WATCHLIST_ID,
+        name: "Weekend queue",
+        ownerId: "user_1",
+      },
+    } as any);
+    db.watchlistItem.count.mockResolvedValue(0);
+    db.watchlistItem.create.mockResolvedValue({
+      id: ITEM_ONE_ID,
+      watchlistId: WATCHLIST_ID,
+      tmdbId: 15,
+      position: 0,
+      status: WatchlistItemStatus.QUEUED,
+      note: "",
+      title: "The Thing",
+      releaseYear: 1982,
+      posterPath: "/thing.jpg",
+      backdropPath: "/thing-backdrop.jpg",
+      overview: "Isolation and paranoia.",
+      watchedAt: null,
+      addedById: "user_1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    const caller = createCaller(db);
+    const result = await caller.items.add({
+      watchlistId: WATCHLIST_ID,
+      tmdbId: 15,
+    });
+
+    expect(result.backdropPath).toBe("/thing-backdrop.jpg");
+    expect(db.watchlistItem.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          posterPath: "/thing.jpg",
+          backdropPath: "/thing-backdrop.jpg",
+        }),
+      }),
+    );
+  });
+
+  it("returns ordered preview items on watchlist list responses", async () => {
+    db.watchlist.findMany.mockResolvedValue([
+      {
+        id: WATCHLIST_ID,
+        name: "Weekend queue",
+        description: "Only creature features.",
+        ownerId: "user_1",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        owner: {
+          id: "user_1",
+          name: "Owner",
+          email: "owner@example.com",
+        },
+        _count: {
+          items: 4,
+          members: 2,
+        },
+        members: [
+          {
+            role: WatchlistRole.OWNER,
+          },
+        ],
+        items: [
+          {
+            tmdbId: 15,
+            title: "The Thing",
+            posterPath: "/thing.jpg",
+            backdropPath: "/thing-backdrop.jpg",
+          },
+          {
+            tmdbId: 42,
+            title: "Alien",
+            posterPath: "/alien.jpg",
+            backdropPath: null,
+          },
+        ],
+      },
+    ] as any);
+
+    const caller = createCaller(db);
+    const result = await caller.watchlists.list();
+
+    expect(result).toMatchObject([
+      {
+        id: WATCHLIST_ID,
+        previewItems: [
+          {
+            tmdbId: 15,
+            title: "The Thing",
+            posterPath: "/thing.jpg",
+            backdropPath: "/thing-backdrop.jpg",
+          },
+          {
+            tmdbId: 42,
+            title: "Alien",
+            posterPath: "/alien.jpg",
+            backdropPath: null,
+          },
+        ],
+      },
+    ]);
+  });
+
   it("rejects reorder payloads that do not match the current items", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
@@ -298,6 +413,7 @@ describe("app router", () => {
       title: "The Thing",
       releaseYear: 1982,
       posterPath: "/thing.jpg",
+      backdropPath: "/thing-backdrop.jpg",
       overview: "Isolation and paranoia.",
       watchedAt: new Date(),
       addedById: "user_1",

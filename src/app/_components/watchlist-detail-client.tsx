@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { TmdbBackdrop, TmdbPoster } from "~/app/_components/tmdb-media";
 import { api } from "~/trpc/react";
 
 type WatchlistDetailClientProps = {
@@ -20,15 +21,34 @@ export function WatchlistDetailClient({
   const [inviteEmail, setInviteEmail] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
   const [noteDrafts, setNoteDrafts] = useState<Record<string, string>>({});
 
   const watchlistQuery = api.watchlists.get.useQuery({ watchlistId });
+  const watchlist = watchlistQuery.data;
+
+  useEffect(() => {
+    const trimmed = searchInput.trim();
+    if (trimmed.length < 2) {
+      setSearchQuery("");
+      setActiveSuggestionIndex(0);
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setSearchQuery(trimmed);
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchInput]);
+
   const movieSearchQuery = api.movies.search.useQuery(
     { query: searchQuery },
-    { enabled: searchQuery.trim().length >= 2 },
+    {
+      enabled: searchQuery.length >= 2,
+    },
   );
-
-  const watchlist = watchlistQuery.data;
 
   useEffect(() => {
     if (!watchlist) {
@@ -41,6 +61,10 @@ export function WatchlistDetailClient({
       Object.fromEntries(watchlist.items.map((item) => [item.id, item.note])),
     );
   }, [watchlist]);
+
+  useEffect(() => {
+    setActiveSuggestionIndex(0);
+  }, [searchQuery]);
 
   const invalidateWatchlist = async () => {
     await Promise.all([
@@ -88,6 +112,24 @@ export function WatchlistDetailClient({
     () => watchlist?.items.map((item) => item.id) ?? [],
     [watchlist?.items],
   );
+  const existingTmdbIds = useMemo(
+    () => new Set(watchlist?.items.map((item) => item.tmdbId) ?? []),
+    [watchlist?.items],
+  );
+  const leadItem = useMemo(
+    () =>
+      watchlist?.items.find((item) => item.backdropPath) ?? watchlist?.items[0],
+    [watchlist?.items],
+  );
+
+  const trimmedSearchInput = searchInput.trim();
+  const searchReady = trimmedSearchInput.length >= 2;
+  const searchResults = movieSearchQuery.data ?? [];
+  const suggestionMovies = searchResults.slice(0, 5);
+  const dropdownOpen = searchFocused && searchReady;
+  const isSearchPending =
+    (searchReady && trimmedSearchInput !== searchQuery) ||
+    movieSearchQuery.isFetching;
 
   const moveItem = (itemId: string, direction: "up" | "down") => {
     const currentIndex = orderedItemIds.indexOf(itemId);
@@ -141,112 +183,324 @@ export function WatchlistDetailClient({
 
       <section className="grid gap-8 xl:grid-cols-[1.3fr_0.7fr]">
         <div className="space-y-8">
-          <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-sm tracking-[0.22em] text-stone-500 uppercase">
+          <TmdbBackdrop
+            title={watchlist.name}
+            backdropPath={leadItem?.backdropPath ?? null}
+            posterPath={leadItem?.posterPath ?? null}
+            priority
+            className="border border-white/10"
+          >
+            <div className="flex h-full flex-col justify-between gap-8 p-6 sm:p-8">
+              <div className="flex flex-wrap items-center gap-3 text-sm text-stone-300">
+                <span className="rounded-full border border-white/15 bg-black/20 px-3 py-1 tracking-[0.18em] uppercase">
                   {watchlist.viewerRole === "OWNER"
                     ? "Owner view"
                     : "Collaborator view"}
-                </p>
-                <h1 className="mt-2 text-3xl font-semibold text-white">
-                  {watchlist.name}
-                </h1>
-                {watchlist.description ? (
-                  <p className="mt-3 max-w-3xl text-stone-300">
-                    {watchlist.description}
-                  </p>
-                ) : null}
+                </span>
+                <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-stone-200">
+                  {watchlist.items.length} movies
+                </span>
+                <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-stone-200">
+                  {watchlist.members.length} members
+                </span>
               </div>
 
-              <div className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-stone-300">
-                <div className="text-stone-500">Members</div>
-                <div className="text-lg font-semibold text-white">
-                  {watchlist.members.length}
+              <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+                <div className="space-y-4">
+                  <div>
+                    <h1 className="max-w-3xl text-3xl font-semibold text-white sm:text-4xl">
+                      {watchlist.name}
+                    </h1>
+                    <p className="mt-3 max-w-2xl text-stone-200">
+                      {watchlist.description ??
+                        "Build the queue together. Add titles, move them around, and keep shared notes in one place."}
+                    </p>
+                  </div>
+
+                  <div className="text-sm text-stone-200">
+                    <span className="text-stone-400">Lead artwork:</span>{" "}
+                    {leadItem?.title ?? "Waiting for the first movie"}
+                  </div>
                 </div>
+
+                {leadItem ? (
+                  <div className="grid grid-cols-[88px_1fr] gap-4 rounded-[1.5rem] border border-white/10 bg-black/25 p-4 backdrop-blur-sm">
+                    <TmdbPoster
+                      title={leadItem.title}
+                      posterPath={leadItem.posterPath}
+                      backdropPath={leadItem.backdropPath}
+                      size="thumb"
+                      className="aspect-[2/3] rounded-[1rem]"
+                    />
+                    <div className="space-y-2">
+                      <p className="text-xs tracking-[0.22em] text-stone-400 uppercase">
+                        Queue spotlight
+                      </p>
+                      <h2 className="text-lg font-semibold text-white">
+                        {leadItem.title}
+                      </h2>
+                      {leadItem.releaseYear ? (
+                        <p className="text-sm text-stone-300">
+                          Released {leadItem.releaseYear}
+                        </p>
+                      ) : null}
+                      {leadItem.overview ? (
+                        <p className="text-sm text-stone-200">
+                          {leadItem.overview}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-stone-400">
+                          No overview available yet.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
-          </section>
+          </TmdbBackdrop>
 
           <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <div className="space-y-1">
               <h2 className="text-xl font-semibold text-white">Add movies</h2>
               <p className="text-sm text-stone-400">
-                Search TMDB, then add a movie to this shared queue.
+                Search TMDB live as you type, then add posters straight into the
+                shared queue.
               </p>
             </div>
 
-            <form
-              className="mt-5 flex flex-col gap-3 sm:flex-row"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setSearchQuery(searchInput.trim());
-              }}
-            >
-              <input
-                value={searchInput}
-                onChange={(event) => setSearchInput(event.target.value)}
-                className="flex-1 rounded-2xl border border-white/10 bg-stone-950 px-4 py-3 text-white transition outline-none focus:border-white/30"
-                placeholder="Search movies..."
-              />
-              <button
-                type="submit"
-                className="rounded-full bg-white px-5 py-3 font-medium text-stone-900 transition hover:bg-stone-200"
-              >
-                Search
-              </button>
-            </form>
+            <div className="mt-5">
+              <div className="relative">
+                <div className="relative flex items-center">
+                  <input
+                    value={searchInput}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => {
+                      window.setTimeout(() => setSearchFocused(false), 120);
+                    }}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (!dropdownOpen || suggestionMovies.length === 0) {
+                        if (event.key === "Escape") {
+                          setSearchFocused(false);
+                        }
+                        return;
+                      }
 
-            {movieSearchQuery.isFetching ? (
-              <p className="mt-4 text-sm text-stone-400">Searching TMDB...</p>
-            ) : null}
-            {movieSearchQuery.error ? (
-              <p className="mt-4 text-sm text-rose-300">
-                {movieSearchQuery.error.message}
-              </p>
-            ) : null}
+                      if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        setActiveSuggestionIndex((current) =>
+                          current >= suggestionMovies.length - 1
+                            ? 0
+                            : current + 1,
+                        );
+                      }
 
-            <div className="mt-4 grid gap-3">
-              {movieSearchQuery.data?.map((movie) => (
-                <div
-                  key={movie.tmdbId}
-                  className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-stone-950/80 p-4 sm:flex-row sm:items-start sm:justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-white">{movie.title}</h3>
-                      {movie.releaseYear ? (
-                        <span className="text-sm text-stone-500">
-                          {movie.releaseYear}
-                        </span>
-                      ) : null}
-                    </div>
-                    {movie.overview ? (
-                      <p className="max-w-2xl text-sm text-stone-400">
-                        {movie.overview}
-                      </p>
+                      if (event.key === "ArrowUp") {
+                        event.preventDefault();
+                        setActiveSuggestionIndex((current) =>
+                          current <= 0
+                            ? suggestionMovies.length - 1
+                            : current - 1,
+                        );
+                      }
+
+                      if (event.key === "Escape") {
+                        event.preventDefault();
+                        setSearchFocused(false);
+                      }
+                    }}
+                    className="w-full rounded-[1.5rem] border border-white/10 bg-stone-950 px-4 py-4 pr-28 text-white transition outline-none focus:border-white/30"
+                    placeholder="Search movies..."
+                  />
+
+                  {searchInput ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchInput("");
+                        setSearchQuery("");
+                        setSearchFocused(false);
+                      }}
+                      className="absolute right-4 rounded-full border border-white/10 px-3 py-1 text-xs tracking-[0.18em] text-stone-300 uppercase transition hover:border-white/25 hover:text-white"
+                    >
+                      Clear
+                    </button>
+                  ) : null}
+                </div>
+
+                {dropdownOpen ? (
+                  <div
+                    onMouseDown={(event) => event.preventDefault()}
+                    className="absolute inset-x-0 top-[calc(100%+0.75rem)] z-20 overflow-hidden rounded-[1.5rem] border border-white/10 bg-stone-950/95 shadow-2xl shadow-black/40 backdrop-blur"
+                  >
+                    {isSearchPending ? (
+                      <div className="px-4 py-4 text-sm text-stone-400">
+                        Searching TMDB...
+                      </div>
+                    ) : movieSearchQuery.error ? (
+                      <div className="px-4 py-4 text-sm text-rose-300">
+                        {movieSearchQuery.error.message}
+                      </div>
+                    ) : suggestionMovies.length === 0 ? (
+                      <div className="px-4 py-4 text-sm text-stone-400">
+                        No matching movies yet.
+                      </div>
                     ) : (
-                      <p className="text-sm text-stone-500">
-                        No overview available.
-                      </p>
+                      <div className="max-h-[22rem] overflow-y-auto p-2">
+                        {suggestionMovies.map((movie, index) => {
+                          const alreadyAdded = existingTmdbIds.has(
+                            movie.tmdbId,
+                          );
+
+                          return (
+                            <div
+                              key={movie.tmdbId}
+                              className={`grid grid-cols-[56px_1fr_auto] items-center gap-3 rounded-[1.2rem] px-3 py-3 transition ${
+                                index === activeSuggestionIndex
+                                  ? "bg-white/10"
+                                  : "hover:bg-white/5"
+                              }`}
+                            >
+                              <TmdbPoster
+                                title={movie.title}
+                                posterPath={movie.posterPath}
+                                backdropPath={movie.backdropPath}
+                                size="thumb"
+                                className="aspect-[2/3] rounded-[0.9rem]"
+                              />
+
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="truncate font-medium text-white">
+                                    {movie.title}
+                                  </p>
+                                  {movie.releaseYear ? (
+                                    <span className="text-xs text-stone-500">
+                                      {movie.releaseYear}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <p className="text-sm text-stone-400">
+                                  {movie.overview || "No overview available."}
+                                </p>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  addItem.mutate({
+                                    watchlistId,
+                                    tmdbId: movie.tmdbId,
+                                  })
+                                }
+                                disabled={alreadyAdded || addItem.isPending}
+                                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                                  alreadyAdded
+                                    ? "border border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                                    : "border border-white/15 text-white hover:border-white/30"
+                                } disabled:cursor-not-allowed disabled:opacity-70`}
+                              >
+                                {alreadyAdded
+                                  ? "Added"
+                                  : addItem.isPending
+                                    ? "Adding..."
+                                    : "Add"}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
+                ) : null}
+              </div>
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addItem.mutate({
-                        watchlistId,
-                        tmdbId: movie.tmdbId,
-                      })
-                    }
-                    disabled={addItem.isPending}
-                    className="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    Add
-                  </button>
+              {!searchReady ? (
+                <p className="mt-4 text-sm text-stone-500">
+                  Start with at least two characters to search TMDB.
+                </p>
+              ) : null}
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold tracking-[0.2em] text-stone-500 uppercase">
+                  Search results
+                </h3>
+                {searchReady ? (
+                  <p className="text-sm text-stone-500">
+                    {isSearchPending
+                      ? "Refreshing artwork..."
+                      : `${searchResults.length} results`}
+                  </p>
+                ) : null}
+              </div>
+
+              {searchReady && !isSearchPending && searchResults.length === 0 ? (
+                <div className="rounded-[1.75rem] border border-dashed border-white/10 bg-stone-950/60 p-5 text-stone-400">
+                  No movies matched this search.
                 </div>
-              ))}
+              ) : null}
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {searchResults.map((movie) => {
+                  const alreadyAdded = existingTmdbIds.has(movie.tmdbId);
+
+                  return (
+                    <div
+                      key={movie.tmdbId}
+                      className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-stone-950/80"
+                    >
+                      <TmdbPoster
+                        title={movie.title}
+                        posterPath={movie.posterPath}
+                        backdropPath={movie.backdropPath}
+                        className="aspect-[2/3] rounded-none"
+                      />
+
+                      <div className="space-y-4 p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-lg font-semibold text-white">
+                            {movie.title}
+                          </h3>
+                          {movie.releaseYear ? (
+                            <span className="text-sm text-stone-500">
+                              {movie.releaseYear}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <p className="min-h-24 text-sm text-stone-400">
+                          {movie.overview || "No overview available."}
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            addItem.mutate({
+                              watchlistId,
+                              tmdbId: movie.tmdbId,
+                            })
+                          }
+                          disabled={alreadyAdded || addItem.isPending}
+                          className={`w-full rounded-full px-4 py-3 text-sm font-medium transition ${
+                            alreadyAdded
+                              ? "border border-emerald-400/20 bg-emerald-400/10 text-emerald-100"
+                              : "bg-white text-stone-900 hover:bg-stone-200"
+                          } disabled:cursor-not-allowed disabled:opacity-70`}
+                        >
+                          {alreadyAdded
+                            ? "Already on this list"
+                            : addItem.isPending
+                              ? "Adding..."
+                              : "Add to queue"}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {addItem.error ? (
@@ -266,125 +520,144 @@ export function WatchlistDetailClient({
             </div>
 
             {watchlist.items.length === 0 ? (
-              <div className="mt-5 rounded-2xl border border-dashed border-white/10 bg-stone-950/60 p-5 text-stone-400">
+              <div className="mt-5 rounded-[1.75rem] border border-dashed border-white/10 bg-stone-950/60 p-5 text-stone-400">
                 No movies on this list yet.
               </div>
             ) : null}
 
-            <div className="mt-5 grid gap-4">
+            <div className="mt-5 grid gap-5">
               {watchlist.items.map((item, index) => (
                 <div
                   key={item.id}
-                  className="rounded-2xl border border-white/10 bg-stone-950/80 p-4"
+                  className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-stone-950/85"
                 >
-                  <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
-                          #{index + 1}
-                        </span>
-                        <h3 className="text-lg font-semibold text-white">
-                          {item.title}
-                        </h3>
-                        {item.releaseYear ? (
-                          <span className="text-sm text-stone-500">
-                            {item.releaseYear}
-                          </span>
-                        ) : null}
-                        <span className="rounded-full bg-white/5 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
-                          {item.status}
-                        </span>
+                  <div className="grid gap-5 p-4 lg:grid-cols-[210px_1fr] lg:p-5">
+                    <TmdbPoster
+                      title={item.title}
+                      posterPath={item.posterPath}
+                      backdropPath={item.backdropPath}
+                      className="aspect-[2/3] rounded-[1.25rem]"
+                    />
+
+                    <div className="space-y-5">
+                      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
+                              #{index + 1}
+                            </span>
+                            <h3 className="text-2xl font-semibold text-white">
+                              {item.title}
+                            </h3>
+                            {item.releaseYear ? (
+                              <span className="text-sm text-stone-500">
+                                {item.releaseYear}
+                              </span>
+                            ) : null}
+                            <span className="rounded-full bg-white/5 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
+                              {item.status}
+                            </span>
+                          </div>
+
+                          {item.overview ? (
+                            <p className="max-w-3xl text-sm text-stone-400">
+                              {item.overview}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-stone-500">
+                              No overview available.
+                            </p>
+                          )}
+
+                          <p className="text-xs tracking-wide text-stone-500 uppercase">
+                            Added by {item.addedBy.name ?? item.addedBy.email}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => moveItem(item.id, "up")}
+                            disabled={index === 0 || reorderItems.isPending}
+                            className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Move up
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveItem(item.id, "down")}
+                            disabled={
+                              index === watchlist.items.length - 1 ||
+                              reorderItems.isPending
+                            }
+                            className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            Move down
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateItem.mutate({
+                                itemId: item.id,
+                                status:
+                                  item.status === "WATCHED"
+                                    ? "QUEUED"
+                                    : "WATCHED",
+                                note: noteDrafts[item.id] ?? item.note,
+                              })
+                            }
+                            className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30"
+                          >
+                            {item.status === "WATCHED"
+                              ? "Move to queue"
+                              : "Mark watched"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeItem.mutate({ itemId: item.id })
+                            }
+                            className="rounded-full border border-rose-400/20 px-3 py-2 text-sm text-rose-200 transition hover:border-rose-300/40"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
 
-                      {item.overview ? (
-                        <p className="max-w-3xl text-sm text-stone-400">
-                          {item.overview}
-                        </p>
-                      ) : null}
-
-                      <p className="text-xs tracking-wide text-stone-500 uppercase">
-                        Added by {item.addedBy.name ?? item.addedBy.email}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={() => moveItem(item.id, "up")}
-                        disabled={index === 0 || reorderItems.isPending}
-                        className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Move up
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveItem(item.id, "down")}
-                        disabled={
-                          index === watchlist.items.length - 1 ||
-                          reorderItems.isPending
-                        }
-                        className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Move down
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateItem.mutate({
-                            itemId: item.id,
-                            status:
-                              item.status === "WATCHED" ? "QUEUED" : "WATCHED",
-                            note: noteDrafts[item.id] ?? item.note,
-                          })
-                        }
-                        className="rounded-full border border-white/15 px-3 py-2 text-sm transition hover:border-white/30"
-                      >
-                        {item.status === "WATCHED"
-                          ? "Move to queue"
-                          : "Mark watched"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeItem.mutate({ itemId: item.id })}
-                        className="rounded-full border border-rose-400/20 px-3 py-2 text-sm text-rose-200 transition hover:border-rose-300/40"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-col gap-3">
-                    <textarea
-                      value={noteDrafts[item.id] ?? ""}
-                      onChange={(event) =>
-                        setNoteDrafts((current) => ({
-                          ...current,
-                          [item.id]: event.target.value,
-                        }))
-                      }
-                      className="min-h-24 rounded-2xl border border-white/10 bg-stone-950 px-4 py-3 text-white transition outline-none focus:border-white/30"
-                      placeholder="Shared note for this movie..."
-                    />
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateItem.mutate({
-                            itemId: item.id,
-                            note: noteDrafts[item.id] ?? "",
-                            status: item.status,
-                          })
-                        }
-                        className="rounded-full bg-white px-4 py-2 text-sm font-medium text-stone-900 transition hover:bg-stone-200"
-                      >
-                        Save note
-                      </button>
-                      {item.watchedAt ? (
-                        <span className="text-xs tracking-wide text-stone-500 uppercase">
-                          Watched{" "}
-                          {new Date(item.watchedAt).toLocaleDateString()}
-                        </span>
-                      ) : null}
+                      <div className="space-y-3">
+                        <textarea
+                          value={noteDrafts[item.id] ?? ""}
+                          onChange={(event) =>
+                            setNoteDrafts((current) => ({
+                              ...current,
+                              [item.id]: event.target.value,
+                            }))
+                          }
+                          className="min-h-28 w-full rounded-[1.25rem] border border-white/10 bg-stone-950 px-4 py-3 text-white transition outline-none focus:border-white/30"
+                          placeholder="Shared note for this movie..."
+                        />
+                        <div className="flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateItem.mutate({
+                                itemId: item.id,
+                                note: noteDrafts[item.id] ?? "",
+                                status: item.status,
+                              })
+                            }
+                            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-stone-900 transition hover:bg-stone-200"
+                          >
+                            Save note
+                          </button>
+                          {item.watchedAt ? (
+                            <span className="text-xs tracking-wide text-stone-500 uppercase">
+                              Watched{" "}
+                              {new Date(item.watchedAt).toLocaleDateString()}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

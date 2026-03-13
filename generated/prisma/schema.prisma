@@ -115,22 +115,23 @@ model WatchlistInvite {
 }
 
 model WatchlistItem {
-  id          String              @id @default(cuid())
-  watchlistId String
-  tmdbId      Int
-  position    Int
-  status      WatchlistItemStatus @default(QUEUED)
-  note        String              @default("")
-  title       String
-  releaseYear Int?
-  posterPath  String?
-  overview    String?
-  watchedAt   DateTime?
-  addedById   String
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  addedBy     User                @relation("WatchlistItemAddedBy", fields: [addedById], references: [id], onDelete: Restrict)
-  watchlist   Watchlist           @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  id           String              @id @default(cuid())
+  watchlistId  String
+  tmdbId       Int
+  position     Int
+  status       WatchlistItemStatus @default(QUEUED)
+  note         String              @default("")
+  title        String
+  releaseYear  Int?
+  posterPath   String?
+  backdropPath String?
+  overview     String?
+  watchedAt    DateTime?
+  addedById    String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  addedBy      User                @relation("WatchlistItemAddedBy", fields: [addedById], references: [id], onDelete: Restrict)
+  watchlist    Watchlist           @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
   @@unique([watchlistId, tmdbId])
   @@index([watchlistId, position])

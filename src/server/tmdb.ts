@@ -11,6 +11,7 @@ type TmdbMovieResult = {
   title: string;
   overview: string;
   poster_path: string | null;
+  backdrop_path: string | null;
   release_date: string | null;
 };
 
@@ -19,6 +20,7 @@ export type MovieSearchResult = {
   title: string;
   overview: string;
   posterPath: string | null;
+  backdropPath: string | null;
   releaseYear: number | null;
 };
 
@@ -30,6 +32,7 @@ export function mapTmdbMovie(movie: TmdbMovieResult): MovieSearchResult {
     title: movie.title,
     overview: movie.overview,
     posterPath: movie.poster_path,
+    backdropPath: movie.backdrop_path,
     releaseYear: year ? Number(year) : null,
   };
 }

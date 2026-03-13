@@ -68,6 +68,7 @@ export const itemsRouter = createTRPCRouter({
             title: movie.title,
             releaseYear: movie.releaseYear,
             posterPath: movie.posterPath,
+            backdropPath: movie.backdropPath,
             overview: movie.overview,
             position,
             addedById: ctx.session.user.id,

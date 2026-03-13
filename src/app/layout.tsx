@@ -9,7 +9,8 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "CineCircle",
-  description: "Collaborative movie watchlists for shared planning and discovery.",
+  description:
+    "Collaborative movie watchlists for shared planning and discovery.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
