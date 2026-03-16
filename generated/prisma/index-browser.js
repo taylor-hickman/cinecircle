@@ -162,6 +162,7 @@ exports.Prisma.WatchlistScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
+  mediaType: 'mediaType',
   ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -197,8 +198,8 @@ exports.Prisma.WatchlistItemScalarFieldEnum = {
   status: 'status',
   note: 'note',
   title: 'title',
-  director: 'director',
-  releaseYear: 'releaseYear',
+  creditNames: 'creditNames',
+  year: 'year',
   posterPath: 'posterPath',
   backdropPath: 'backdropPath',
   overview: 'overview',
@@ -222,6 +223,11 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.WatchlistMediaType = exports.$Enums.WatchlistMediaType = {
+  MOVIE: 'MOVIE',
+  TV: 'TV'
+};
+
 exports.WatchlistRole = exports.$Enums.WatchlistRole = {
   OWNER: 'OWNER',
   COLLABORATOR: 'COLLABORATOR'

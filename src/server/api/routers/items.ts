@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { Prisma, WatchlistItemStatus } from "../../../../generated/prisma";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { getMovieDetails } from "~/server/tmdb";
+import { getMediaDetails } from "~/server/tmdb";
 import { requireWatchlistMembership } from "~/server/watchlists/permissions";
 
 const watchlistIdSchema = z.string().cuid();
@@ -47,13 +47,16 @@ export const itemsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await requireWatchlistMembership(
+      const membership = await requireWatchlistMembership(
         ctx.db,
         ctx.session.user.id,
         input.watchlistId,
       );
 
-      const movie = await getMovieDetails(input.tmdbId);
+      const media = await getMediaDetails(
+        input.tmdbId,
+        membership.watchlist.mediaType,
+      );
       const position = await ctx.db.watchlistItem.count({
         where: {
           watchlistId: input.watchlistId,
@@ -64,13 +67,13 @@ export const itemsRouter = createTRPCRouter({
         return await ctx.db.watchlistItem.create({
           data: {
             watchlistId: input.watchlistId,
-            tmdbId: movie.tmdbId,
-            title: movie.title,
-            director: movie.director,
-            releaseYear: movie.releaseYear,
-            posterPath: movie.posterPath,
-            backdropPath: movie.backdropPath,
-            overview: movie.overview,
+            tmdbId: media.tmdbId,
+            title: media.title,
+            creditNames: media.creditNames,
+            year: media.year,
+            posterPath: media.posterPath,
+            backdropPath: media.backdropPath,
+            overview: media.overview,
             position,
             addedById: ctx.session.user.id,
           },
@@ -82,7 +85,7 @@ export const itemsRouter = createTRPCRouter({
         ) {
           throw new TRPCError({
             code: "CONFLICT",
-            message: "That movie is already on this watchlist.",
+            message: "That title is already on this watchlist.",
           });
         }
 

@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { TmdbBackdrop, TmdbPoster } from "~/app/_components/tmdb-media";
+import {
+  getWatchlistBadgeLabel,
+  getWatchlistTypeLabel,
+  type WatchlistMediaTypeValue,
+  watchlistMediaTypes,
+} from "~/lib/watchlist-media";
 import { api } from "~/trpc/react";
 
 export function DashboardClient() {
@@ -12,12 +18,14 @@ export function DashboardClient() {
   const utils = api.useUtils();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [mediaType, setMediaType] = useState<WatchlistMediaTypeValue>("MOVIE");
 
   const watchlistsQuery = api.watchlists.list.useQuery();
   const createWatchlist = api.watchlists.create.useMutation({
     onSuccess: async (watchlist) => {
       setName("");
       setDescription("");
+      setMediaType("MOVIE");
       await utils.watchlists.list.invalidate();
       router.push(`/lists/${watchlist.id}`);
     },
@@ -33,6 +41,7 @@ export function DashboardClient() {
             createWatchlist.mutate({
               name,
               description: description || undefined,
+              mediaType,
             });
           }}
         >
@@ -41,8 +50,8 @@ export function DashboardClient() {
               Create a watchlist
             </h1>
             <p className="text-sm text-stone-400">
-              Start a private list, then invite collaborators after it is
-              created.
+              Start a private movie or TV list, then invite collaborators after
+              it is created.
             </p>
           </div>
 
@@ -56,6 +65,32 @@ export function DashboardClient() {
               placeholder="Friday horror queue"
             />
           </label>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm text-stone-300">List type</legend>
+            <div className="grid grid-cols-2 gap-3">
+              {watchlistMediaTypes.map((option) => (
+                <label
+                  key={option}
+                  className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-3 text-sm transition ${
+                    mediaType === option
+                      ? "border-white/40 bg-white/10 text-white"
+                      : "border-white/10 bg-stone-950 text-stone-300 hover:border-white/20"
+                  }`}
+                >
+                  <span>{getWatchlistTypeLabel(option)}</span>
+                  <input
+                    type="radio"
+                    name="mediaType"
+                    value={option}
+                    checked={mediaType === option}
+                    onChange={() => setMediaType(option)}
+                    className="sr-only"
+                  />
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           <label className="block space-y-2">
             <span className="text-sm text-stone-300">Description</span>
@@ -136,7 +171,10 @@ export function DashboardClient() {
                             : "Collaborator"}
                         </span>
                         <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-xs text-stone-200">
-                          {watchlist.itemCount} movies
+                          {getWatchlistBadgeLabel(watchlist.mediaType)}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-xs text-stone-200">
+                          {watchlist.itemCount} titles
                         </span>
                         <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-xs text-stone-200">
                           {watchlist.memberCount} members
@@ -152,7 +190,7 @@ export function DashboardClient() {
                             {watchlist.description ??
                               (watchlist.previewItems.length > 0
                                 ? "Artwork-led queue with live TMDB search and shared notes."
-                                : "Add movies to turn this empty shell into a visual watchlist.")}
+                                : "Add titles to turn this empty shell into a visual watchlist.")}
                           </p>
                         </div>
 
@@ -180,7 +218,7 @@ export function DashboardClient() {
                           </div>
                         ) : (
                           <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-black/20 p-4 text-sm text-stone-300">
-                            No movies yet. Open the list and start typing to get
+                            No titles yet. Open the list and start typing to get
                             live TMDB suggestions.
                           </div>
                         )}

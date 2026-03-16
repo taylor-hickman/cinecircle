@@ -5,22 +5,39 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { TmdbBackdrop, TmdbPoster } from "~/app/_components/tmdb-media";
+import {
+  getAddMediaHeading,
+  getCreditPrefix,
+  getEmptyQueueLabel,
+  getMissingCreditLabel,
+  getNoResultsLabel,
+  getSearchEmptyLabel,
+  getSearchPlaceholder,
+  getWaitingForFirstTitleLabel,
+  getWatchlistBadgeLabel,
+  getYearPrefix,
+  type WatchlistMediaTypeValue,
+} from "~/lib/watchlist-media";
 import { api } from "~/trpc/react";
 
 type WatchlistDetailClientProps = {
   watchlistId: string;
 };
 
-function DirectorLine({
-  director,
+function CreditLine({
+  creditNames,
+  mediaType,
   className,
 }: {
-  director?: string | null;
+  creditNames?: string | null;
+  mediaType: WatchlistMediaTypeValue;
   className: string;
 }) {
   return (
     <p className={className}>
-      {director ? `Directed by ${director}` : "Director unavailable"}
+      {creditNames
+        ? `${getCreditPrefix(mediaType)} ${creditNames}`
+        : getMissingCreditLabel(mediaType)}
     </p>
   );
 }
@@ -57,10 +74,13 @@ export function WatchlistDetailClient({
     return () => window.clearTimeout(timeout);
   }, [searchInput]);
 
-  const movieSearchQuery = api.movies.search.useQuery(
-    { query: searchQuery },
+  const mediaSearchQuery = api.media.search.useQuery(
     {
-      enabled: searchQuery.length >= 2,
+      query: searchQuery,
+      mediaType: watchlist?.mediaType ?? "MOVIE",
+    },
+    {
+      enabled: !!watchlist && searchQuery.length >= 2,
     },
   );
 
@@ -138,12 +158,12 @@ export function WatchlistDetailClient({
 
   const trimmedSearchInput = searchInput.trim();
   const searchReady = trimmedSearchInput.length >= 2;
-  const searchResults = movieSearchQuery.data ?? [];
-  const suggestionMovies = searchResults.slice(0, 5);
+  const searchResults = mediaSearchQuery.data ?? [];
+  const suggestionResults = searchResults.slice(0, 5);
   const dropdownOpen = searchFocused && searchReady;
   const isSearchPending =
     (searchReady && trimmedSearchInput !== searchQuery) ||
-    movieSearchQuery.isFetching;
+    mediaSearchQuery.isFetching;
 
   const moveItem = (itemId: string, direction: "up" | "down") => {
     const currentIndex = orderedItemIds.indexOf(itemId);
@@ -185,6 +205,8 @@ export function WatchlistDetailClient({
     );
   }
 
+  const mediaType = watchlist.mediaType;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center gap-3 text-sm text-stone-400">
@@ -192,7 +214,7 @@ export function WatchlistDetailClient({
           ← Back to dashboard
         </Link>
         <span>Owner: {watchlist.owner.name ?? watchlist.owner.email}</span>
-        <span>{watchlist.items.length} movies</span>
+        <span>{watchlist.items.length} titles</span>
       </div>
 
       <section className="grid gap-8 xl:grid-cols-[1.3fr_0.7fr]">
@@ -212,7 +234,10 @@ export function WatchlistDetailClient({
                     : "Collaborator view"}
                 </span>
                 <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-stone-200">
-                  {watchlist.items.length} movies
+                  {getWatchlistBadgeLabel(mediaType)}
+                </span>
+                <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-stone-200">
+                  {watchlist.items.length} titles
                 </span>
                 <span className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-stone-200">
                   {watchlist.members.length} members
@@ -233,7 +258,7 @@ export function WatchlistDetailClient({
 
                   <div className="text-sm text-stone-200">
                     <span className="text-stone-400">Lead artwork:</span>{" "}
-                    {leadItem?.title ?? "Waiting for the first movie"}
+                    {leadItem?.title ?? getWaitingForFirstTitleLabel(mediaType)}
                   </div>
                 </div>
 
@@ -253,13 +278,14 @@ export function WatchlistDetailClient({
                       <h2 className="text-lg font-semibold text-white">
                         {leadItem.title}
                       </h2>
-                      <DirectorLine
-                        director={leadItem.director}
+                      <CreditLine
+                        creditNames={leadItem.creditNames}
+                        mediaType={mediaType}
                         className="text-sm text-stone-200"
                       />
-                      {leadItem.releaseYear ? (
+                      {leadItem.year ? (
                         <p className="text-sm text-stone-300">
-                          Released {leadItem.releaseYear}
+                          {getYearPrefix(mediaType)} {leadItem.year}
                         </p>
                       ) : null}
                       {leadItem.overview ? (
@@ -280,7 +306,9 @@ export function WatchlistDetailClient({
 
           <section className="rounded-3xl border border-white/10 bg-white/5 p-6">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold text-white">Add movies</h2>
+              <h2 className="text-xl font-semibold text-white">
+                {getAddMediaHeading(mediaType)}
+              </h2>
               <p className="text-sm text-stone-400">
                 Search TMDB live as you type, then add posters straight into the
                 shared queue.
@@ -298,7 +326,7 @@ export function WatchlistDetailClient({
                     }}
                     onChange={(event) => setSearchInput(event.target.value)}
                     onKeyDown={(event) => {
-                      if (!dropdownOpen || suggestionMovies.length === 0) {
+                      if (!dropdownOpen || suggestionResults.length === 0) {
                         if (event.key === "Escape") {
                           setSearchFocused(false);
                         }
@@ -308,7 +336,7 @@ export function WatchlistDetailClient({
                       if (event.key === "ArrowDown") {
                         event.preventDefault();
                         setActiveSuggestionIndex((current) =>
-                          current >= suggestionMovies.length - 1
+                          current >= suggestionResults.length - 1
                             ? 0
                             : current + 1,
                         );
@@ -318,7 +346,7 @@ export function WatchlistDetailClient({
                         event.preventDefault();
                         setActiveSuggestionIndex((current) =>
                           current <= 0
-                            ? suggestionMovies.length - 1
+                            ? suggestionResults.length - 1
                             : current - 1,
                         );
                       }
@@ -329,7 +357,7 @@ export function WatchlistDetailClient({
                       }
                     }}
                     className="w-full rounded-[1.5rem] border border-white/10 bg-stone-950 px-4 py-4 pr-28 text-white transition outline-none focus:border-white/30"
-                    placeholder="Search movies..."
+                    placeholder={getSearchPlaceholder(mediaType)}
                   />
 
                   {searchInput ? (
@@ -356,24 +384,24 @@ export function WatchlistDetailClient({
                       <div className="px-4 py-4 text-sm text-stone-400">
                         Searching TMDB...
                       </div>
-                    ) : movieSearchQuery.error ? (
+                    ) : mediaSearchQuery.error ? (
                       <div className="px-4 py-4 text-sm text-rose-300">
-                        {movieSearchQuery.error.message}
+                        {mediaSearchQuery.error.message}
                       </div>
-                    ) : suggestionMovies.length === 0 ? (
+                    ) : suggestionResults.length === 0 ? (
                       <div className="px-4 py-4 text-sm text-stone-400">
-                        No matching movies yet.
+                        {getSearchEmptyLabel(mediaType)}
                       </div>
                     ) : (
                       <div className="max-h-[22rem] overflow-y-auto p-2">
-                        {suggestionMovies.map((movie, index) => {
+                        {suggestionResults.map((result, index) => {
                           const alreadyAdded = existingTmdbIds.has(
-                            movie.tmdbId,
+                            result.tmdbId,
                           );
 
                           return (
                             <div
-                              key={movie.tmdbId}
+                              key={result.tmdbId}
                               className={`grid grid-cols-[56px_1fr_auto] items-center gap-3 rounded-[1.2rem] px-3 py-3 transition ${
                                 index === activeSuggestionIndex
                                   ? "bg-white/10"
@@ -381,9 +409,9 @@ export function WatchlistDetailClient({
                               }`}
                             >
                               <TmdbPoster
-                                title={movie.title}
-                                posterPath={movie.posterPath}
-                                backdropPath={movie.backdropPath}
+                                title={result.title}
+                                posterPath={result.posterPath}
+                                backdropPath={result.backdropPath}
                                 size="thumb"
                                 className="aspect-[2/3] rounded-[0.9rem]"
                               />
@@ -391,20 +419,21 @@ export function WatchlistDetailClient({
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
                                   <p className="truncate font-medium text-white">
-                                    {movie.title}
+                                    {result.title}
                                   </p>
-                                  {movie.releaseYear ? (
+                                  {result.year ? (
                                     <span className="text-xs text-stone-500">
-                                      {movie.releaseYear}
+                                      {result.year}
                                     </span>
                                   ) : null}
                                 </div>
-                                <DirectorLine
-                                  director={movie.director}
+                                <CreditLine
+                                  creditNames={result.creditNames}
+                                  mediaType={mediaType}
                                   className="truncate text-sm text-stone-300"
                                 />
                                 <p className="text-sm text-stone-400">
-                                  {movie.overview || "No overview available."}
+                                  {result.overview || "No overview available."}
                                 </p>
                               </div>
 
@@ -413,7 +442,7 @@ export function WatchlistDetailClient({
                                 onClick={() =>
                                   addItem.mutate({
                                     watchlistId,
-                                    tmdbId: movie.tmdbId,
+                                    tmdbId: result.tmdbId,
                                   })
                                 }
                                 disabled={alreadyAdded || addItem.isPending}
@@ -461,23 +490,23 @@ export function WatchlistDetailClient({
 
               {searchReady && !isSearchPending && searchResults.length === 0 ? (
                 <div className="rounded-[1.75rem] border border-dashed border-white/10 bg-stone-950/60 p-5 text-stone-400">
-                  No movies matched this search.
+                  {getNoResultsLabel(mediaType)}
                 </div>
               ) : null}
 
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {searchResults.map((movie) => {
-                  const alreadyAdded = existingTmdbIds.has(movie.tmdbId);
+                {searchResults.map((result) => {
+                  const alreadyAdded = existingTmdbIds.has(result.tmdbId);
 
                   return (
                     <div
-                      key={movie.tmdbId}
+                      key={result.tmdbId}
                       className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-stone-950/80"
                     >
                       <TmdbPoster
-                        title={movie.title}
-                        posterPath={movie.posterPath}
-                        backdropPath={movie.backdropPath}
+                        title={result.title}
+                        posterPath={result.posterPath}
+                        backdropPath={result.backdropPath}
                         className="aspect-[2/3] rounded-none"
                       />
 
@@ -485,22 +514,23 @@ export function WatchlistDetailClient({
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="text-lg font-semibold text-white">
-                              {movie.title}
+                              {result.title}
                             </h3>
-                            {movie.releaseYear ? (
+                            {result.year ? (
                               <span className="text-sm text-stone-500">
-                                {movie.releaseYear}
+                                {result.year}
                               </span>
                             ) : null}
                           </div>
-                          <DirectorLine
-                            director={movie.director}
+                          <CreditLine
+                            creditNames={result.creditNames}
+                            mediaType={mediaType}
                             className="text-sm text-stone-300"
                           />
                         </div>
 
                         <p className="min-h-24 text-sm text-stone-400">
-                          {movie.overview || "No overview available."}
+                          {result.overview || "No overview available."}
                         </p>
 
                         <button
@@ -508,7 +538,7 @@ export function WatchlistDetailClient({
                           onClick={() =>
                             addItem.mutate({
                               watchlistId,
-                              tmdbId: movie.tmdbId,
+                              tmdbId: result.tmdbId,
                             })
                           }
                           disabled={alreadyAdded || addItem.isPending}
@@ -543,13 +573,13 @@ export function WatchlistDetailClient({
               <h2 className="text-xl font-semibold text-white">Queue</h2>
               <p className="text-sm text-stone-400">
                 Reorder with the arrow controls, mark titles watched, and keep
-                one shared note per movie.
+                one shared note per title.
               </p>
             </div>
 
             {watchlist.items.length === 0 ? (
               <div className="mt-5 rounded-[1.75rem] border border-dashed border-white/10 bg-stone-950/60 p-5 text-stone-400">
-                No movies on this list yet.
+                {getEmptyQueueLabel(mediaType)}
               </div>
             ) : null}
 
@@ -578,17 +608,18 @@ export function WatchlistDetailClient({
                               <h3 className="text-2xl font-semibold text-white">
                                 {item.title}
                               </h3>
-                              {item.releaseYear ? (
+                              {item.year ? (
                                 <span className="text-sm text-stone-500">
-                                  {item.releaseYear}
+                                  {item.year}
                                 </span>
                               ) : null}
                               <span className="rounded-full bg-white/5 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
                                 {item.status}
                               </span>
                             </div>
-                            <DirectorLine
-                              director={item.director}
+                            <CreditLine
+                              creditNames={item.creditNames}
+                              mediaType={mediaType}
                               className="text-sm text-stone-300"
                             />
                           </div>
@@ -668,7 +699,7 @@ export function WatchlistDetailClient({
                             }))
                           }
                           className="min-h-28 w-full rounded-[1.25rem] border border-white/10 bg-stone-950 px-4 py-3 text-white transition outline-none focus:border-white/30"
-                          placeholder="Shared note for this movie..."
+                          placeholder="Shared note for this title..."
                         />
                         <div className="flex flex-wrap items-center gap-3">
                           <button

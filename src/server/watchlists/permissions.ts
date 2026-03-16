@@ -22,6 +22,7 @@ export async function getWatchlistMembership(
       watchlist: {
         select: {
           id: true,
+          mediaType: true,
           name: true,
           ownerId: true,
         },

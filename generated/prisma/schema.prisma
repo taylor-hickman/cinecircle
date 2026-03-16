@@ -18,6 +18,11 @@ enum WatchlistItemStatus {
   WATCHED
 }
 
+enum WatchlistMediaType {
+  MOVIE
+  TV
+}
+
 model Account {
   id                       String  @id @default(cuid())
   userId                   String
@@ -68,16 +73,17 @@ model VerificationToken {
 }
 
 model Watchlist {
-  id          String            @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
   description String?
+  mediaType   WatchlistMediaType
   ownerId     String
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   invites     WatchlistInvite[]
   items       WatchlistItem[]
   members     WatchlistMember[]
-  owner       User              @relation("WatchlistOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner       User               @relation("WatchlistOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
 }
@@ -122,8 +128,8 @@ model WatchlistItem {
   status       WatchlistItemStatus @default(QUEUED)
   note         String              @default("")
   title        String
-  director     String?
-  releaseYear  Int?
+  creditNames  String?
+  year         Int?
   posterPath   String?
   backdropPath String?
   overview     String?

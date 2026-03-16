@@ -7,14 +7,15 @@ import {
   Prisma,
   PrismaClient,
   WatchlistItemStatus,
+  WatchlistMediaType,
   WatchlistRole,
 } from "../../../../generated/prisma";
 import { appRouter } from "~/server/api/root";
 
 const mocks = vi.hoisted(() => ({
   sendWatchlistInviteEmail: vi.fn(),
-  getMovieDetails: vi.fn(),
-  searchMovies: vi.fn(),
+  getMediaDetails: vi.fn(),
+  searchMedia: vi.fn(),
 }));
 
 vi.mock("~/server/email", () => ({
@@ -32,8 +33,8 @@ vi.mock("~/server/auth", () => ({
 }));
 
 vi.mock("~/server/tmdb", () => ({
-  getMovieDetails: mocks.getMovieDetails,
-  searchMovies: mocks.searchMovies,
+  getMediaDetails: mocks.getMediaDetails,
+  searchMedia: mocks.searchMedia,
 }));
 
 type Context = {
@@ -47,6 +48,28 @@ const MEMBER_ID = "cjld2d1s00001qzrmn831i7ro";
 const ITEM_ONE_ID = "cjld2e1s00003qzrmn831i7rq";
 const ITEM_TWO_ID = "cjld2e1s00004qzrmn831i7rr";
 const INVITE_ID = "cjld2f1s00005qzrmn831i7rs";
+
+const movieDetails = {
+  tmdbId: 15,
+  mediaType: "MOVIE" as const,
+  title: "The Thing",
+  creditNames: "John Carpenter",
+  overview: "Isolation and paranoia.",
+  posterPath: "/thing.jpg",
+  backdropPath: "/thing-backdrop.jpg",
+  year: 1982,
+};
+
+const tvDetails = {
+  tmdbId: 1399,
+  mediaType: "TV" as const,
+  title: "Game of Thrones",
+  creditNames: "David Benioff, D. B. Weiss",
+  overview: "Winter is coming.",
+  posterPath: "/got.jpg",
+  backdropPath: "/got-backdrop.jpg",
+  year: 2011,
+};
 
 const createSession = (): Session => ({
   expires: "2099-01-01T00:00:00.000Z",
@@ -76,18 +99,10 @@ describe("app router", () => {
     mockReset(db);
     mocks.sendWatchlistInviteEmail.mockReset();
     mocks.sendWatchlistInviteEmail.mockResolvedValue(undefined);
-    mocks.getMovieDetails.mockReset();
-    mocks.getMovieDetails.mockResolvedValue({
-      tmdbId: 15,
-      title: "The Thing",
-      director: "John Carpenter",
-      overview: "Isolation and paranoia.",
-      posterPath: "/thing.jpg",
-      backdropPath: "/thing-backdrop.jpg",
-      releaseYear: 1982,
-    });
-    mocks.searchMovies.mockReset();
-    mocks.searchMovies.mockResolvedValue([]);
+    mocks.getMediaDetails.mockReset();
+    mocks.getMediaDetails.mockResolvedValue(movieDetails);
+    mocks.searchMedia.mockReset();
+    mocks.searchMedia.mockResolvedValue([]);
 
     db.$transaction.mockImplementation(async (input: unknown) => {
       if (typeof input === "function") {
@@ -102,11 +117,12 @@ describe("app router", () => {
     });
   });
 
-  it("creates a watchlist and owner membership", async () => {
+  it("creates a watchlist and owner membership with a media type", async () => {
     db.watchlist.create.mockResolvedValue({
       id: WATCHLIST_ID,
       name: "Sci-fi night",
       description: null,
+      mediaType: WatchlistMediaType.MOVIE,
       ownerId: "user_1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -123,9 +139,20 @@ describe("app router", () => {
     const caller = createCaller(db);
     const result = await caller.watchlists.create({
       name: "Sci-fi night",
+      mediaType: "MOVIE",
     });
 
-    expect(result.id).toBe(WATCHLIST_ID);
+    expect(result).toMatchObject({
+      id: WATCHLIST_ID,
+      mediaType: WatchlistMediaType.MOVIE,
+    });
+    expect(db.watchlist.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          mediaType: WatchlistMediaType.MOVIE,
+        }),
+      }),
+    );
     expect(db.watchlistMember.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -145,6 +172,7 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.MOVIE,
         name: "Weekend queue",
         ownerId: "user_2",
       },
@@ -213,7 +241,7 @@ describe("app router", () => {
     );
   });
 
-  it("returns a conflict when the same movie is added twice", async () => {
+  it("returns a conflict when the same TV title is added twice", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
       watchlistId: WATCHLIST_ID,
@@ -223,11 +251,13 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.TV,
         name: "Weekend queue",
         ownerId: "user_1",
       },
     } as any);
     db.watchlistItem.count.mockResolvedValue(0);
+    mocks.getMediaDetails.mockResolvedValue(tvDetails);
     db.watchlistItem.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError("duplicate", {
         code: "P2002",
@@ -240,14 +270,15 @@ describe("app router", () => {
     await expect(
       caller.items.add({
         watchlistId: WATCHLIST_ID,
-        tmdbId: 15,
+        tmdbId: tvDetails.tmdbId,
       }),
     ).rejects.toMatchObject({
       code: "CONFLICT",
+      message: "That title is already on this watchlist.",
     });
   });
 
-  it("persists director and artwork metadata when adding a movie", async () => {
+  it("persists movie credit and artwork metadata when adding an item", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
       watchlistId: WATCHLIST_ID,
@@ -257,6 +288,7 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.MOVIE,
         name: "Weekend queue",
         ownerId: "user_1",
       },
@@ -270,8 +302,8 @@ describe("app router", () => {
       status: WatchlistItemStatus.QUEUED,
       note: "",
       title: "The Thing",
-      director: "John Carpenter",
-      releaseYear: 1982,
+      creditNames: "John Carpenter",
+      year: 1982,
       posterPath: "/thing.jpg",
       backdropPath: "/thing-backdrop.jpg",
       overview: "Isolation and paranoia.",
@@ -284,62 +316,141 @@ describe("app router", () => {
     const caller = createCaller(db);
     const result = await caller.items.add({
       watchlistId: WATCHLIST_ID,
-      tmdbId: 15,
+      tmdbId: movieDetails.tmdbId,
     });
 
     expect(result.backdropPath).toBe("/thing-backdrop.jpg");
-    expect(result.director).toBe("John Carpenter");
+    expect(result.creditNames).toBe("John Carpenter");
+    expect(mocks.getMediaDetails).toHaveBeenCalledWith(
+      movieDetails.tmdbId,
+      WatchlistMediaType.MOVIE,
+    );
     expect(db.watchlistItem.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          director: "John Carpenter",
+          creditNames: "John Carpenter",
           posterPath: "/thing.jpg",
           backdropPath: "/thing-backdrop.jpg",
+          year: 1982,
         }),
       }),
     );
   });
 
-  it("returns director metadata on movie search results without changing order", async () => {
-    mocks.searchMovies.mockResolvedValue([
+  it("persists TV creator metadata when adding an item", async () => {
+    db.watchlistMember.findUnique.mockResolvedValue({
+      id: MEMBER_ID,
+      watchlistId: WATCHLIST_ID,
+      userId: "user_1",
+      role: WatchlistRole.OWNER,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      watchlist: {
+        id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.TV,
+        name: "Epic queue",
+        ownerId: "user_1",
+      },
+    } as any);
+    db.watchlistItem.count.mockResolvedValue(0);
+    mocks.getMediaDetails.mockResolvedValue(tvDetails);
+    db.watchlistItem.create.mockResolvedValue({
+      id: ITEM_ONE_ID,
+      watchlistId: WATCHLIST_ID,
+      tmdbId: 1399,
+      position: 0,
+      status: WatchlistItemStatus.QUEUED,
+      note: "",
+      title: "Game of Thrones",
+      creditNames: "David Benioff, D. B. Weiss",
+      year: 2011,
+      posterPath: "/got.jpg",
+      backdropPath: "/got-backdrop.jpg",
+      overview: "Winter is coming.",
+      watchedAt: null,
+      addedById: "user_1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any);
+
+    const caller = createCaller(db);
+    const result = await caller.items.add({
+      watchlistId: WATCHLIST_ID,
+      tmdbId: tvDetails.tmdbId,
+    });
+
+    expect(result.creditNames).toBe(tvDetails.creditNames);
+    expect(mocks.getMediaDetails).toHaveBeenCalledWith(
+      tvDetails.tmdbId,
+      WatchlistMediaType.TV,
+    );
+  });
+
+  it("returns movie search metadata without changing order", async () => {
+    mocks.searchMedia.mockResolvedValue([
       {
         tmdbId: 42,
+        mediaType: "MOVIE",
         title: "Alien",
-        director: "Ridley Scott",
+        creditNames: "Ridley Scott",
         overview: "Xenomorph problems.",
         posterPath: "/alien.jpg",
         backdropPath: "/alien-backdrop.jpg",
-        releaseYear: 1979,
+        year: 1979,
       },
+      movieDetails,
+    ]);
+
+    const caller = createCaller(db);
+    const result = await caller.media.search({
+      query: "th",
+      mediaType: "MOVIE",
+    });
+
+    expect(result.map((item) => item.tmdbId)).toEqual([42, 15]);
+    expect(result.map((item) => item.creditNames)).toEqual([
+      "Ridley Scott",
+      "John Carpenter",
+    ]);
+    expect(result.map((item) => item.mediaType)).toEqual(["MOVIE", "MOVIE"]);
+  });
+
+  it("returns TV search metadata without changing order", async () => {
+    mocks.searchMedia.mockResolvedValue([
+      tvDetails,
       {
-        tmdbId: 15,
-        title: "The Thing",
-        director: "John Carpenter",
-        overview: "Isolation and paranoia.",
-        posterPath: "/thing.jpg",
-        backdropPath: "/thing-backdrop.jpg",
-        releaseYear: 1982,
+        tmdbId: 1412,
+        mediaType: "TV",
+        title: "Arrow",
+        creditNames: "Greg Berlanti, Marc Guggenheim, Andrew Kreisberg",
+        overview: "A vigilante returns home.",
+        posterPath: "/arrow.jpg",
+        backdropPath: "/arrow-backdrop.jpg",
+        year: 2012,
       },
     ]);
 
     const caller = createCaller(db);
-    const result = await caller.movies.search({
-      query: "th",
+    const result = await caller.media.search({
+      query: "ga",
+      mediaType: "TV",
     });
 
-    expect(result.map((movie) => movie.tmdbId)).toEqual([42, 15]);
-    expect(result.map((movie) => movie.director)).toEqual([
-      "Ridley Scott",
-      "John Carpenter",
+    expect(result.map((item) => item.tmdbId)).toEqual([1399, 1412]);
+    expect(result.map((item) => item.creditNames)).toEqual([
+      "David Benioff, D. B. Weiss",
+      "Greg Berlanti, Marc Guggenheim, Andrew Kreisberg",
     ]);
+    expect(result.map((item) => item.mediaType)).toEqual(["TV", "TV"]);
   });
 
-  it("returns ordered preview items on watchlist list responses", async () => {
+  it("returns ordered preview items and media type on watchlist list responses", async () => {
     db.watchlist.findMany.mockResolvedValue([
       {
         id: WATCHLIST_ID,
         name: "Weekend queue",
         description: "Only creature features.",
+        mediaType: WatchlistMediaType.MOVIE,
         ownerId: "user_1",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -380,6 +491,7 @@ describe("app router", () => {
     expect(result).toMatchObject([
       {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.MOVIE,
         previewItems: [
           {
             tmdbId: 15,
@@ -398,7 +510,7 @@ describe("app router", () => {
     ]);
   });
 
-  it("returns stored directors on watchlist items", async () => {
+  it("returns stored item credits and list media type on watchlist details", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
       watchlistId: WATCHLIST_ID,
@@ -408,6 +520,7 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.TV,
         name: "Weekend queue",
         ownerId: "user_1",
       },
@@ -416,6 +529,7 @@ describe("app router", () => {
       id: WATCHLIST_ID,
       name: "Weekend queue",
       description: "Only creature features.",
+      mediaType: WatchlistMediaType.TV,
       ownerId: "user_1",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -430,16 +544,16 @@ describe("app router", () => {
         {
           id: ITEM_ONE_ID,
           watchlistId: WATCHLIST_ID,
-          tmdbId: 15,
+          tmdbId: 1399,
           position: 0,
           status: WatchlistItemStatus.QUEUED,
           note: "",
-          title: "The Thing",
-          director: "John Carpenter",
-          releaseYear: 1982,
-          posterPath: "/thing.jpg",
-          backdropPath: "/thing-backdrop.jpg",
-          overview: "Isolation and paranoia.",
+          title: "Game of Thrones",
+          creditNames: "David Benioff, D. B. Weiss",
+          year: 2011,
+          posterPath: "/got.jpg",
+          backdropPath: "/got-backdrop.jpg",
+          overview: "Winter is coming.",
           watchedAt: null,
           addedById: "user_1",
           createdAt: new Date(),
@@ -458,10 +572,12 @@ describe("app router", () => {
       watchlistId: WATCHLIST_ID,
     });
 
+    expect(result.mediaType).toBe(WatchlistMediaType.TV);
     expect(result.items).toMatchObject([
       {
         id: ITEM_ONE_ID,
-        director: "John Carpenter",
+        creditNames: "David Benioff, D. B. Weiss",
+        year: 2011,
       },
     ]);
   });
@@ -476,6 +592,7 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.MOVIE,
         name: "Weekend queue",
         ownerId: "user_1",
       },
@@ -508,6 +625,7 @@ describe("app router", () => {
       updatedAt: new Date(),
       watchlist: {
         id: WATCHLIST_ID,
+        mediaType: WatchlistMediaType.MOVIE,
         name: "Weekend queue",
         ownerId: "user_1",
       },
@@ -520,8 +638,8 @@ describe("app router", () => {
       status: WatchlistItemStatus.WATCHED,
       note: "",
       title: "The Thing",
-      director: "John Carpenter",
-      releaseYear: 1982,
+      creditNames: "John Carpenter",
+      year: 1982,
       posterPath: "/thing.jpg",
       backdropPath: "/thing-backdrop.jpg",
       overview: "Isolation and paranoia.",
