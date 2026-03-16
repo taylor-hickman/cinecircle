@@ -11,6 +11,20 @@ type WatchlistDetailClientProps = {
   watchlistId: string;
 };
 
+function DirectorLine({
+  director,
+  className,
+}: {
+  director?: string | null;
+  className: string;
+}) {
+  return (
+    <p className={className}>
+      {director ? `Directed by ${director}` : "Director unavailable"}
+    </p>
+  );
+}
+
 export function WatchlistDetailClient({
   watchlistId,
 }: WatchlistDetailClientProps) {
@@ -239,6 +253,10 @@ export function WatchlistDetailClient({
                       <h2 className="text-lg font-semibold text-white">
                         {leadItem.title}
                       </h2>
+                      <DirectorLine
+                        director={leadItem.director}
+                        className="text-sm text-stone-200"
+                      />
                       {leadItem.releaseYear ? (
                         <p className="text-sm text-stone-300">
                           Released {leadItem.releaseYear}
@@ -381,6 +399,10 @@ export function WatchlistDetailClient({
                                     </span>
                                   ) : null}
                                 </div>
+                                <DirectorLine
+                                  director={movie.director}
+                                  className="truncate text-sm text-stone-300"
+                                />
                                 <p className="text-sm text-stone-400">
                                   {movie.overview || "No overview available."}
                                 </p>
@@ -460,15 +482,21 @@ export function WatchlistDetailClient({
                       />
 
                       <div className="space-y-4 p-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-lg font-semibold text-white">
-                            {movie.title}
-                          </h3>
-                          {movie.releaseYear ? (
-                            <span className="text-sm text-stone-500">
-                              {movie.releaseYear}
-                            </span>
-                          ) : null}
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-lg font-semibold text-white">
+                              {movie.title}
+                            </h3>
+                            {movie.releaseYear ? (
+                              <span className="text-sm text-stone-500">
+                                {movie.releaseYear}
+                              </span>
+                            ) : null}
+                          </div>
+                          <DirectorLine
+                            director={movie.director}
+                            className="text-sm text-stone-300"
+                          />
                         </div>
 
                         <p className="min-h-24 text-sm text-stone-400">
@@ -542,21 +570,27 @@ export function WatchlistDetailClient({
                     <div className="space-y-5">
                       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                         <div className="space-y-3">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
-                              #{index + 1}
-                            </span>
-                            <h3 className="text-2xl font-semibold text-white">
-                              {item.title}
-                            </h3>
-                            {item.releaseYear ? (
-                              <span className="text-sm text-stone-500">
-                                {item.releaseYear}
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
+                                #{index + 1}
                               </span>
-                            ) : null}
-                            <span className="rounded-full bg-white/5 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
-                              {item.status}
-                            </span>
+                              <h3 className="text-2xl font-semibold text-white">
+                                {item.title}
+                              </h3>
+                              {item.releaseYear ? (
+                                <span className="text-sm text-stone-500">
+                                  {item.releaseYear}
+                                </span>
+                              ) : null}
+                              <span className="rounded-full bg-white/5 px-3 py-1 text-xs tracking-wide text-stone-300 uppercase">
+                                {item.status}
+                              </span>
+                            </div>
+                            <DirectorLine
+                              director={item.director}
+                              className="text-sm text-stone-300"
+                            />
                           </div>
 
                           {item.overview ? (

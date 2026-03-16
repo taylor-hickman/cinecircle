@@ -66,6 +66,7 @@ export const itemsRouter = createTRPCRouter({
             watchlistId: input.watchlistId,
             tmdbId: movie.tmdbId,
             title: movie.title,
+            director: movie.director,
             releaseYear: movie.releaseYear,
             posterPath: movie.posterPath,
             backdropPath: movie.backdropPath,

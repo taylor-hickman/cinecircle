@@ -9474,6 +9474,7 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus | null
     note: string | null
     title: string | null
+    director: string | null
     releaseYear: number | null
     posterPath: string | null
     backdropPath: string | null
@@ -9492,6 +9493,7 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus | null
     note: string | null
     title: string | null
+    director: string | null
     releaseYear: number | null
     posterPath: string | null
     backdropPath: string | null
@@ -9510,6 +9512,7 @@ export namespace Prisma {
     status: number
     note: number
     title: number
+    director: number
     releaseYear: number
     posterPath: number
     backdropPath: number
@@ -9542,6 +9545,7 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
+    director?: true
     releaseYear?: true
     posterPath?: true
     backdropPath?: true
@@ -9560,6 +9564,7 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
+    director?: true
     releaseYear?: true
     posterPath?: true
     backdropPath?: true
@@ -9578,6 +9583,7 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
+    director?: true
     releaseYear?: true
     posterPath?: true
     backdropPath?: true
@@ -9683,6 +9689,7 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus
     note: string
     title: string
+    director: string | null
     releaseYear: number | null
     posterPath: string | null
     backdropPath: string | null
@@ -9720,6 +9727,7 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
+    director?: boolean
     releaseYear?: boolean
     posterPath?: boolean
     backdropPath?: boolean
@@ -9740,6 +9748,7 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
+    director?: boolean
     releaseYear?: boolean
     posterPath?: boolean
     backdropPath?: boolean
@@ -9760,6 +9769,7 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
+    director?: boolean
     releaseYear?: boolean
     posterPath?: boolean
     backdropPath?: boolean
@@ -9780,6 +9790,7 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
+    director?: boolean
     releaseYear?: boolean
     posterPath?: boolean
     backdropPath?: boolean
@@ -9790,7 +9801,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "releaseYear" | "posterPath" | "backdropPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
+  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "director" | "releaseYear" | "posterPath" | "backdropPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
   export type WatchlistItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     addedBy?: boolean | UserDefaultArgs<ExtArgs>
     watchlist?: boolean | WatchlistDefaultArgs<ExtArgs>
@@ -9818,6 +9829,7 @@ export namespace Prisma {
       status: $Enums.WatchlistItemStatus
       note: string
       title: string
+      director: string | null
       releaseYear: number | null
       posterPath: string | null
       backdropPath: string | null
@@ -10258,6 +10270,7 @@ export namespace Prisma {
     readonly status: FieldRef<"WatchlistItem", 'WatchlistItemStatus'>
     readonly note: FieldRef<"WatchlistItem", 'String'>
     readonly title: FieldRef<"WatchlistItem", 'String'>
+    readonly director: FieldRef<"WatchlistItem", 'String'>
     readonly releaseYear: FieldRef<"WatchlistItem", 'Int'>
     readonly posterPath: FieldRef<"WatchlistItem", 'String'>
     readonly backdropPath: FieldRef<"WatchlistItem", 'String'>
@@ -10791,6 +10804,7 @@ export namespace Prisma {
     status: 'status',
     note: 'note',
     title: 'title',
+    director: 'director',
     releaseYear: 'releaseYear',
     posterPath: 'posterPath',
     backdropPath: 'backdropPath',
@@ -11408,6 +11422,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
+    director?: StringNullableFilter<"WatchlistItem"> | string | null
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -11428,6 +11443,7 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
+    director?: SortOrderInput | SortOrder
     releaseYear?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
     backdropPath?: SortOrderInput | SortOrder
@@ -11452,6 +11468,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
+    director?: StringNullableFilter<"WatchlistItem"> | string | null
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -11472,6 +11489,7 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
+    director?: SortOrderInput | SortOrder
     releaseYear?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
     backdropPath?: SortOrderInput | SortOrder
@@ -11498,6 +11516,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusWithAggregatesFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringWithAggregatesFilter<"WatchlistItem"> | string
     title?: StringWithAggregatesFilter<"WatchlistItem"> | string
+    director?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     releaseYear?: IntNullableWithAggregatesFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
@@ -12020,6 +12039,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -12039,6 +12059,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -12056,6 +12077,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12075,6 +12097,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12093,6 +12116,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -12110,6 +12134,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12127,6 +12152,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12632,6 +12658,7 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
+    director?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
@@ -12656,6 +12683,7 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
+    director?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
@@ -12674,6 +12702,7 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
+    director?: SortOrder
     releaseYear?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
@@ -13753,6 +13782,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -13771,6 +13801,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -13964,6 +13995,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
+    director?: StringNullableFilter<"WatchlistItem"> | string | null
     releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -14043,6 +14075,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -14060,6 +14093,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -14655,6 +14689,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -14808,6 +14843,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14826,6 +14862,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14843,6 +14880,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14895,6 +14933,7 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
+    director?: string | null
     releaseYear?: number | null
     posterPath?: string | null
     backdropPath?: string | null
@@ -14956,6 +14995,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14973,6 +15013,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14990,6 +15031,7 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
+    director?: NullableStringFieldUpdateOperationsInput | string | null
     releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null

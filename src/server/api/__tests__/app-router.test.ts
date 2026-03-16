@@ -14,6 +14,7 @@ import { appRouter } from "~/server/api/root";
 const mocks = vi.hoisted(() => ({
   sendWatchlistInviteEmail: vi.fn(),
   getMovieDetails: vi.fn(),
+  searchMovies: vi.fn(),
 }));
 
 vi.mock("~/server/email", () => ({
@@ -32,7 +33,7 @@ vi.mock("~/server/auth", () => ({
 
 vi.mock("~/server/tmdb", () => ({
   getMovieDetails: mocks.getMovieDetails,
-  searchMovies: vi.fn(),
+  searchMovies: mocks.searchMovies,
 }));
 
 type Context = {
@@ -79,11 +80,14 @@ describe("app router", () => {
     mocks.getMovieDetails.mockResolvedValue({
       tmdbId: 15,
       title: "The Thing",
+      director: "John Carpenter",
       overview: "Isolation and paranoia.",
       posterPath: "/thing.jpg",
       backdropPath: "/thing-backdrop.jpg",
       releaseYear: 1982,
     });
+    mocks.searchMovies.mockReset();
+    mocks.searchMovies.mockResolvedValue([]);
 
     db.$transaction.mockImplementation(async (input: unknown) => {
       if (typeof input === "function") {
@@ -243,7 +247,7 @@ describe("app router", () => {
     });
   });
 
-  it("persists poster and backdrop paths when adding a movie", async () => {
+  it("persists director and artwork metadata when adding a movie", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
       watchlistId: WATCHLIST_ID,
@@ -266,6 +270,7 @@ describe("app router", () => {
       status: WatchlistItemStatus.QUEUED,
       note: "",
       title: "The Thing",
+      director: "John Carpenter",
       releaseYear: 1982,
       posterPath: "/thing.jpg",
       backdropPath: "/thing-backdrop.jpg",
@@ -283,14 +288,50 @@ describe("app router", () => {
     });
 
     expect(result.backdropPath).toBe("/thing-backdrop.jpg");
+    expect(result.director).toBe("John Carpenter");
     expect(db.watchlistItem.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
+          director: "John Carpenter",
           posterPath: "/thing.jpg",
           backdropPath: "/thing-backdrop.jpg",
         }),
       }),
     );
+  });
+
+  it("returns director metadata on movie search results without changing order", async () => {
+    mocks.searchMovies.mockResolvedValue([
+      {
+        tmdbId: 42,
+        title: "Alien",
+        director: "Ridley Scott",
+        overview: "Xenomorph problems.",
+        posterPath: "/alien.jpg",
+        backdropPath: "/alien-backdrop.jpg",
+        releaseYear: 1979,
+      },
+      {
+        tmdbId: 15,
+        title: "The Thing",
+        director: "John Carpenter",
+        overview: "Isolation and paranoia.",
+        posterPath: "/thing.jpg",
+        backdropPath: "/thing-backdrop.jpg",
+        releaseYear: 1982,
+      },
+    ]);
+
+    const caller = createCaller(db);
+    const result = await caller.movies.search({
+      query: "th",
+    });
+
+    expect(result.map((movie) => movie.tmdbId)).toEqual([42, 15]);
+    expect(result.map((movie) => movie.director)).toEqual([
+      "Ridley Scott",
+      "John Carpenter",
+    ]);
   });
 
   it("returns ordered preview items on watchlist list responses", async () => {
@@ -357,6 +398,74 @@ describe("app router", () => {
     ]);
   });
 
+  it("returns stored directors on watchlist items", async () => {
+    db.watchlistMember.findUnique.mockResolvedValue({
+      id: MEMBER_ID,
+      watchlistId: WATCHLIST_ID,
+      userId: "user_1",
+      role: WatchlistRole.OWNER,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      watchlist: {
+        id: WATCHLIST_ID,
+        name: "Weekend queue",
+        ownerId: "user_1",
+      },
+    } as any);
+    db.watchlist.findUniqueOrThrow.mockResolvedValue({
+      id: WATCHLIST_ID,
+      name: "Weekend queue",
+      description: "Only creature features.",
+      ownerId: "user_1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      owner: {
+        id: "user_1",
+        name: "Owner",
+        email: "owner@example.com",
+      },
+      members: [],
+      invites: [],
+      items: [
+        {
+          id: ITEM_ONE_ID,
+          watchlistId: WATCHLIST_ID,
+          tmdbId: 15,
+          position: 0,
+          status: WatchlistItemStatus.QUEUED,
+          note: "",
+          title: "The Thing",
+          director: "John Carpenter",
+          releaseYear: 1982,
+          posterPath: "/thing.jpg",
+          backdropPath: "/thing-backdrop.jpg",
+          overview: "Isolation and paranoia.",
+          watchedAt: null,
+          addedById: "user_1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          addedBy: {
+            id: "user_1",
+            name: "Owner",
+            email: "owner@example.com",
+          },
+        },
+      ],
+    } as any);
+
+    const caller = createCaller(db);
+    const result = await caller.watchlists.get({
+      watchlistId: WATCHLIST_ID,
+    });
+
+    expect(result.items).toMatchObject([
+      {
+        id: ITEM_ONE_ID,
+        director: "John Carpenter",
+      },
+    ]);
+  });
+
   it("rejects reorder payloads that do not match the current items", async () => {
     db.watchlistMember.findUnique.mockResolvedValue({
       id: MEMBER_ID,
@@ -411,6 +520,7 @@ describe("app router", () => {
       status: WatchlistItemStatus.WATCHED,
       note: "",
       title: "The Thing",
+      director: "John Carpenter",
       releaseYear: 1982,
       posterPath: "/thing.jpg",
       backdropPath: "/thing-backdrop.jpg",
