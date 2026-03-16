@@ -26,6 +26,7 @@ describe("watchlist permissions", () => {
           role: "OWNER",
           watchlist: {
             id: "watchlist_1",
+            mediaType: "MOVIE",
             name: "Weekend queue",
             ownerId: "user_1",
           },

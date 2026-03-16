@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { WatchlistRole } from "../../../../generated/prisma";
+import { watchlistMediaTypes } from "~/lib/watchlist-media";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
   requireWatchlistMembership,
@@ -8,6 +9,7 @@ import {
 } from "~/server/watchlists/permissions";
 
 const watchlistIdSchema = z.string().cuid();
+const mediaTypeSchema = z.enum(watchlistMediaTypes);
 
 export const watchlistsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -63,6 +65,7 @@ export const watchlistsRouter = createTRPCRouter({
       id: watchlist.id,
       name: watchlist.name,
       description: watchlist.description,
+      mediaType: watchlist.mediaType,
       createdAt: watchlist.createdAt,
       updatedAt: watchlist.updatedAt,
       owner: watchlist.owner,
@@ -152,6 +155,7 @@ export const watchlistsRouter = createTRPCRouter({
       z.object({
         name: z.string().trim().min(1).max(100),
         description: z.string().trim().max(500).optional(),
+        mediaType: mediaTypeSchema,
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -160,6 +164,7 @@ export const watchlistsRouter = createTRPCRouter({
           data: {
             name: input.name,
             description: input.description?.trim() ?? null,
+            mediaType: input.mediaType,
             ownerId: ctx.session.user.id,
           },
         });

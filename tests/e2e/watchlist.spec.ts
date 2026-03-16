@@ -12,7 +12,7 @@ test.describe("watchlist flow", () => {
     await page.goto("/");
     await page
       .getByRole("heading", {
-        name: "Build a shared watchlist, invite people, and decide what to watch next.",
+        name: "Build a shared movie or TV circle, invite people, and decide what to watch next.",
       })
       .waitFor();
 

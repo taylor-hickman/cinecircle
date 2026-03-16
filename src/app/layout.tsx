@@ -10,7 +10,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 export const metadata: Metadata = {
   title: "CineCircle",
   description:
-    "Collaborative movie watchlists for shared planning and discovery.",
+    "Collaborative movie and TV watchlists for shared planning and discovery.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
                   CineCircle
                 </Link>
                 <p className="text-sm text-stone-400">
-                  Shared movie lists, TMDB search, and invite-based
+                  Shared movie and TV lists, TMDB search, and invite-based
                   collaboration.
                 </p>
               </div>

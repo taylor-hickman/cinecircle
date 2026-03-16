@@ -1,6 +1,6 @@
 # CineCircle
 
-CineCircle is a collaborative movie watchlist app built on the T3 stack. Users can sign in with Google or email magic links, create private watchlists, invite collaborators by email, search TMDB, and manage a shared queue with notes and watched status.
+CineCircle is a collaborative movie and TV watchlist app built on the T3 stack. Users can sign in with Google or email magic links, create private watchlists, invite collaborators by email, search TMDB, and manage a shared queue with notes and watched status.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the human workflow and [AGENTS.md](AGENTS.md) for the repo rules future agents should follow.
 
@@ -98,6 +98,6 @@ npm run vercel-build
 
 - Private multi-list watchlists
 - Email invite workflow with owner-managed membership
-- TMDB-backed search and metadata snapshots
+- TMDB-backed movie and TV search with metadata snapshots
 - Shared reorder, note, remove, and watched-state actions
 - Minimal frontend intended for later styling

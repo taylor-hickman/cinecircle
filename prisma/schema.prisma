@@ -18,6 +18,11 @@ enum WatchlistItemStatus {
   WATCHED
 }
 
+enum WatchlistMediaType {
+  MOVIE
+  TV
+}
+
 model Account {
   id                       String  @id @default(cuid())
   userId                   String
@@ -53,9 +58,9 @@ model User {
   image             String?
   accounts          Account[]
   sessions          Session[]
-  ownedWatchlists   Watchlist[]      @relation("WatchlistOwner")
+  ownedWatchlists   Watchlist[]       @relation("WatchlistOwner")
   watchlistInvites  WatchlistInvite[] @relation("WatchlistInviteInviter")
-  watchlistItems    WatchlistItem[]  @relation("WatchlistItemAddedBy")
+  watchlistItems    WatchlistItem[]   @relation("WatchlistItemAddedBy")
   watchlistMembers  WatchlistMember[]
 }
 
@@ -71,6 +76,7 @@ model Watchlist {
   id          String            @id @default(cuid())
   name        String
   description String?
+  mediaType   WatchlistMediaType
   ownerId     String
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
@@ -115,24 +121,24 @@ model WatchlistInvite {
 }
 
 model WatchlistItem {
-  id          String              @id @default(cuid())
-  watchlistId String
-  tmdbId      Int
-  position    Int
-  status      WatchlistItemStatus @default(QUEUED)
-  note        String              @default("")
-  title       String
-  director    String?
-  releaseYear Int?
-  posterPath  String?
+  id           String              @id @default(cuid())
+  watchlistId  String
+  tmdbId       Int
+  position     Int
+  status       WatchlistItemStatus @default(QUEUED)
+  note         String              @default("")
+  title        String
+  creditNames  String?
+  year         Int?
+  posterPath   String?
   backdropPath String?
-  overview    String?
-  watchedAt   DateTime?
-  addedById   String
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  addedBy     User                @relation("WatchlistItemAddedBy", fields: [addedById], references: [id], onDelete: Restrict)
-  watchlist   Watchlist           @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  overview     String?
+  watchedAt    DateTime?
+  addedById    String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  addedBy      User                @relation("WatchlistItemAddedBy", fields: [addedById], references: [id], onDelete: Restrict)
+  watchlist    Watchlist           @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
   @@unique([watchlistId, tmdbId])
   @@index([watchlistId, position])

@@ -73,6 +73,14 @@ export const WatchlistItemStatus: {
 
 export type WatchlistItemStatus = (typeof WatchlistItemStatus)[keyof typeof WatchlistItemStatus]
 
+
+export const WatchlistMediaType: {
+  MOVIE: 'MOVIE',
+  TV: 'TV'
+};
+
+export type WatchlistMediaType = (typeof WatchlistMediaType)[keyof typeof WatchlistMediaType]
+
 }
 
 export type WatchlistRole = $Enums.WatchlistRole
@@ -82,6 +90,10 @@ export const WatchlistRole: typeof $Enums.WatchlistRole
 export type WatchlistItemStatus = $Enums.WatchlistItemStatus
 
 export const WatchlistItemStatus: typeof $Enums.WatchlistItemStatus
+
+export type WatchlistMediaType = $Enums.WatchlistMediaType
+
+export const WatchlistMediaType: typeof $Enums.WatchlistMediaType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -6089,6 +6101,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    mediaType: $Enums.WatchlistMediaType | null
     ownerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6098,6 +6111,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    mediaType: $Enums.WatchlistMediaType | null
     ownerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6107,6 +6121,7 @@ export namespace Prisma {
     id: number
     name: number
     description: number
+    mediaType: number
     ownerId: number
     createdAt: number
     updatedAt: number
@@ -6118,6 +6133,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    mediaType?: true
     ownerId?: true
     createdAt?: true
     updatedAt?: true
@@ -6127,6 +6143,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    mediaType?: true
     ownerId?: true
     createdAt?: true
     updatedAt?: true
@@ -6136,6 +6153,7 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    mediaType?: true
     ownerId?: true
     createdAt?: true
     updatedAt?: true
@@ -6218,6 +6236,7 @@ export namespace Prisma {
     id: string
     name: string
     description: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt: Date
     updatedAt: Date
@@ -6244,6 +6263,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    mediaType?: boolean
     ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6258,6 +6278,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    mediaType?: boolean
     ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6268,6 +6289,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    mediaType?: boolean
     ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6278,12 +6300,13 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    mediaType?: boolean
     ownerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type WatchlistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlist"]>
+  export type WatchlistOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "mediaType" | "ownerId" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlist"]>
   export type WatchlistInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     invites?: boolean | Watchlist$invitesArgs<ExtArgs>
     items?: boolean | Watchlist$itemsArgs<ExtArgs>
@@ -6310,6 +6333,7 @@ export namespace Prisma {
       id: string
       name: string
       description: string | null
+      mediaType: $Enums.WatchlistMediaType
       ownerId: string
       createdAt: Date
       updatedAt: Date
@@ -6743,6 +6767,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Watchlist", 'String'>
     readonly name: FieldRef<"Watchlist", 'String'>
     readonly description: FieldRef<"Watchlist", 'String'>
+    readonly mediaType: FieldRef<"Watchlist", 'WatchlistMediaType'>
     readonly ownerId: FieldRef<"Watchlist", 'String'>
     readonly createdAt: FieldRef<"Watchlist", 'DateTime'>
     readonly updatedAt: FieldRef<"Watchlist", 'DateTime'>
@@ -9457,13 +9482,13 @@ export namespace Prisma {
   export type WatchlistItemAvgAggregateOutputType = {
     tmdbId: number | null
     position: number | null
-    releaseYear: number | null
+    year: number | null
   }
 
   export type WatchlistItemSumAggregateOutputType = {
     tmdbId: number | null
     position: number | null
-    releaseYear: number | null
+    year: number | null
   }
 
   export type WatchlistItemMinAggregateOutputType = {
@@ -9474,8 +9499,8 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus | null
     note: string | null
     title: string | null
-    director: string | null
-    releaseYear: number | null
+    creditNames: string | null
+    year: number | null
     posterPath: string | null
     backdropPath: string | null
     overview: string | null
@@ -9493,8 +9518,8 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus | null
     note: string | null
     title: string | null
-    director: string | null
-    releaseYear: number | null
+    creditNames: string | null
+    year: number | null
     posterPath: string | null
     backdropPath: string | null
     overview: string | null
@@ -9512,8 +9537,8 @@ export namespace Prisma {
     status: number
     note: number
     title: number
-    director: number
-    releaseYear: number
+    creditNames: number
+    year: number
     posterPath: number
     backdropPath: number
     overview: number
@@ -9528,13 +9553,13 @@ export namespace Prisma {
   export type WatchlistItemAvgAggregateInputType = {
     tmdbId?: true
     position?: true
-    releaseYear?: true
+    year?: true
   }
 
   export type WatchlistItemSumAggregateInputType = {
     tmdbId?: true
     position?: true
-    releaseYear?: true
+    year?: true
   }
 
   export type WatchlistItemMinAggregateInputType = {
@@ -9545,8 +9570,8 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
-    director?: true
-    releaseYear?: true
+    creditNames?: true
+    year?: true
     posterPath?: true
     backdropPath?: true
     overview?: true
@@ -9564,8 +9589,8 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
-    director?: true
-    releaseYear?: true
+    creditNames?: true
+    year?: true
     posterPath?: true
     backdropPath?: true
     overview?: true
@@ -9583,8 +9608,8 @@ export namespace Prisma {
     status?: true
     note?: true
     title?: true
-    director?: true
-    releaseYear?: true
+    creditNames?: true
+    year?: true
     posterPath?: true
     backdropPath?: true
     overview?: true
@@ -9689,8 +9714,8 @@ export namespace Prisma {
     status: $Enums.WatchlistItemStatus
     note: string
     title: string
-    director: string | null
-    releaseYear: number | null
+    creditNames: string | null
+    year: number | null
     posterPath: string | null
     backdropPath: string | null
     overview: string | null
@@ -9727,8 +9752,8 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
-    director?: boolean
-    releaseYear?: boolean
+    creditNames?: boolean
+    year?: boolean
     posterPath?: boolean
     backdropPath?: boolean
     overview?: boolean
@@ -9748,8 +9773,8 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
-    director?: boolean
-    releaseYear?: boolean
+    creditNames?: boolean
+    year?: boolean
     posterPath?: boolean
     backdropPath?: boolean
     overview?: boolean
@@ -9769,8 +9794,8 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
-    director?: boolean
-    releaseYear?: boolean
+    creditNames?: boolean
+    year?: boolean
     posterPath?: boolean
     backdropPath?: boolean
     overview?: boolean
@@ -9790,8 +9815,8 @@ export namespace Prisma {
     status?: boolean
     note?: boolean
     title?: boolean
-    director?: boolean
-    releaseYear?: boolean
+    creditNames?: boolean
+    year?: boolean
     posterPath?: boolean
     backdropPath?: boolean
     overview?: boolean
@@ -9801,7 +9826,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "director" | "releaseYear" | "posterPath" | "backdropPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
+  export type WatchlistItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "watchlistId" | "tmdbId" | "position" | "status" | "note" | "title" | "creditNames" | "year" | "posterPath" | "backdropPath" | "overview" | "watchedAt" | "addedById" | "createdAt" | "updatedAt", ExtArgs["result"]["watchlistItem"]>
   export type WatchlistItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     addedBy?: boolean | UserDefaultArgs<ExtArgs>
     watchlist?: boolean | WatchlistDefaultArgs<ExtArgs>
@@ -9829,8 +9854,8 @@ export namespace Prisma {
       status: $Enums.WatchlistItemStatus
       note: string
       title: string
-      director: string | null
-      releaseYear: number | null
+      creditNames: string | null
+      year: number | null
       posterPath: string | null
       backdropPath: string | null
       overview: string | null
@@ -10270,8 +10295,8 @@ export namespace Prisma {
     readonly status: FieldRef<"WatchlistItem", 'WatchlistItemStatus'>
     readonly note: FieldRef<"WatchlistItem", 'String'>
     readonly title: FieldRef<"WatchlistItem", 'String'>
-    readonly director: FieldRef<"WatchlistItem", 'String'>
-    readonly releaseYear: FieldRef<"WatchlistItem", 'Int'>
+    readonly creditNames: FieldRef<"WatchlistItem", 'String'>
+    readonly year: FieldRef<"WatchlistItem", 'Int'>
     readonly posterPath: FieldRef<"WatchlistItem", 'String'>
     readonly backdropPath: FieldRef<"WatchlistItem", 'String'>
     readonly overview: FieldRef<"WatchlistItem", 'String'>
@@ -10760,6 +10785,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     description: 'description',
+    mediaType: 'mediaType',
     ownerId: 'ownerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -10804,8 +10830,8 @@ export namespace Prisma {
     status: 'status',
     note: 'note',
     title: 'title',
-    director: 'director',
-    releaseYear: 'releaseYear',
+    creditNames: 'creditNames',
+    year: 'year',
     posterPath: 'posterPath',
     backdropPath: 'backdropPath',
     overview: 'overview',
@@ -10886,6 +10912,20 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime[]'
    */
   export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'WatchlistMediaType'
+   */
+  export type EnumWatchlistMediaTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WatchlistMediaType'>
+    
+
+
+  /**
+   * Reference to a field of type 'WatchlistMediaType[]'
+   */
+  export type ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WatchlistMediaType[]'>
     
 
 
@@ -11202,6 +11242,7 @@ export namespace Prisma {
     id?: StringFilter<"Watchlist"> | string
     name?: StringFilter<"Watchlist"> | string
     description?: StringNullableFilter<"Watchlist"> | string | null
+    mediaType?: EnumWatchlistMediaTypeFilter<"Watchlist"> | $Enums.WatchlistMediaType
     ownerId?: StringFilter<"Watchlist"> | string
     createdAt?: DateTimeFilter<"Watchlist"> | Date | string
     updatedAt?: DateTimeFilter<"Watchlist"> | Date | string
@@ -11215,6 +11256,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    mediaType?: SortOrder
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11231,6 +11273,7 @@ export namespace Prisma {
     NOT?: WatchlistWhereInput | WatchlistWhereInput[]
     name?: StringFilter<"Watchlist"> | string
     description?: StringNullableFilter<"Watchlist"> | string | null
+    mediaType?: EnumWatchlistMediaTypeFilter<"Watchlist"> | $Enums.WatchlistMediaType
     ownerId?: StringFilter<"Watchlist"> | string
     createdAt?: DateTimeFilter<"Watchlist"> | Date | string
     updatedAt?: DateTimeFilter<"Watchlist"> | Date | string
@@ -11244,6 +11287,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    mediaType?: SortOrder
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11259,6 +11303,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Watchlist"> | string
     name?: StringWithAggregatesFilter<"Watchlist"> | string
     description?: StringNullableWithAggregatesFilter<"Watchlist"> | string | null
+    mediaType?: EnumWatchlistMediaTypeWithAggregatesFilter<"Watchlist"> | $Enums.WatchlistMediaType
     ownerId?: StringWithAggregatesFilter<"Watchlist"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Watchlist"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Watchlist"> | Date | string
@@ -11422,8 +11467,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
-    director?: StringNullableFilter<"WatchlistItem"> | string | null
-    releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
+    creditNames?: StringNullableFilter<"WatchlistItem"> | string | null
+    year?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -11443,8 +11488,8 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
-    director?: SortOrderInput | SortOrder
-    releaseYear?: SortOrderInput | SortOrder
+    creditNames?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
     backdropPath?: SortOrderInput | SortOrder
     overview?: SortOrderInput | SortOrder
@@ -11468,8 +11513,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
-    director?: StringNullableFilter<"WatchlistItem"> | string | null
-    releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
+    creditNames?: StringNullableFilter<"WatchlistItem"> | string | null
+    year?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -11489,8 +11534,8 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
-    director?: SortOrderInput | SortOrder
-    releaseYear?: SortOrderInput | SortOrder
+    creditNames?: SortOrderInput | SortOrder
+    year?: SortOrderInput | SortOrder
     posterPath?: SortOrderInput | SortOrder
     backdropPath?: SortOrderInput | SortOrder
     overview?: SortOrderInput | SortOrder
@@ -11516,8 +11561,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusWithAggregatesFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringWithAggregatesFilter<"WatchlistItem"> | string
     title?: StringWithAggregatesFilter<"WatchlistItem"> | string
-    director?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
-    releaseYear?: IntNullableWithAggregatesFilter<"WatchlistItem"> | number | null
+    creditNames?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
+    year?: IntNullableWithAggregatesFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
     overview?: StringNullableWithAggregatesFilter<"WatchlistItem"> | string | null
@@ -11812,6 +11857,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     invites?: WatchlistInviteCreateNestedManyWithoutWatchlistInput
@@ -11824,6 +11870,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11836,6 +11883,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invites?: WatchlistInviteUpdateManyWithoutWatchlistNestedInput
@@ -11848,6 +11896,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11860,6 +11909,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11869,6 +11919,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11877,6 +11928,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12039,8 +12091,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -12059,8 +12111,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -12077,8 +12129,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12097,8 +12149,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12116,8 +12168,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -12134,8 +12186,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12152,8 +12204,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12507,10 +12559,18 @@ export namespace Prisma {
     expires?: SortOrder
   }
 
+  export type EnumWatchlistMediaTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.WatchlistMediaType | EnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel> | $Enums.WatchlistMediaType
+  }
+
   export type WatchlistCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    mediaType?: SortOrder
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12520,6 +12580,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    mediaType?: SortOrder
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12529,9 +12590,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    mediaType?: SortOrder
     ownerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type EnumWatchlistMediaTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WatchlistMediaType | EnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumWatchlistMediaTypeWithAggregatesFilter<$PrismaModel> | $Enums.WatchlistMediaType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel>
+    _max?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel>
   }
 
   export type EnumWatchlistRoleFilter<$PrismaModel = never> = {
@@ -12658,8 +12730,8 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
-    director?: SortOrder
-    releaseYear?: SortOrder
+    creditNames?: SortOrder
+    year?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
     overview?: SortOrder
@@ -12672,7 +12744,7 @@ export namespace Prisma {
   export type WatchlistItemAvgOrderByAggregateInput = {
     tmdbId?: SortOrder
     position?: SortOrder
-    releaseYear?: SortOrder
+    year?: SortOrder
   }
 
   export type WatchlistItemMaxOrderByAggregateInput = {
@@ -12683,8 +12755,8 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
-    director?: SortOrder
-    releaseYear?: SortOrder
+    creditNames?: SortOrder
+    year?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
     overview?: SortOrder
@@ -12702,8 +12774,8 @@ export namespace Prisma {
     status?: SortOrder
     note?: SortOrder
     title?: SortOrder
-    director?: SortOrder
-    releaseYear?: SortOrder
+    creditNames?: SortOrder
+    year?: SortOrder
     posterPath?: SortOrder
     backdropPath?: SortOrder
     overview?: SortOrder
@@ -12716,7 +12788,7 @@ export namespace Prisma {
   export type WatchlistItemSumOrderByAggregateInput = {
     tmdbId?: SortOrder
     position?: SortOrder
-    releaseYear?: SortOrder
+    year?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -13097,6 +13169,10 @@ export namespace Prisma {
     connect?: WatchlistMemberWhereUniqueInput | WatchlistMemberWhereUniqueInput[]
   }
 
+  export type EnumWatchlistMediaTypeFieldUpdateOperationsInput = {
+    set?: $Enums.WatchlistMediaType
+  }
+
   export type WatchlistInviteUpdateManyWithoutWatchlistNestedInput = {
     create?: XOR<WatchlistInviteCreateWithoutWatchlistInput, WatchlistInviteUncheckedCreateWithoutWatchlistInput> | WatchlistInviteCreateWithoutWatchlistInput[] | WatchlistInviteUncheckedCreateWithoutWatchlistInput[]
     connectOrCreate?: WatchlistInviteCreateOrConnectWithoutWatchlistInput | WatchlistInviteCreateOrConnectWithoutWatchlistInput[]
@@ -13450,6 +13526,23 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumWatchlistMediaTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.WatchlistMediaType | EnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel> | $Enums.WatchlistMediaType
+  }
+
+  export type NestedEnumWatchlistMediaTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WatchlistMediaType | EnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WatchlistMediaType[] | ListEnumWatchlistMediaTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumWatchlistMediaTypeWithAggregatesFilter<$PrismaModel> | $Enums.WatchlistMediaType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel>
+    _max?: NestedEnumWatchlistMediaTypeFilter<$PrismaModel>
+  }
+
   export type NestedEnumWatchlistRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.WatchlistRole | EnumWatchlistRoleFieldRefInput<$PrismaModel>
     in?: $Enums.WatchlistRole[] | ListEnumWatchlistRoleFieldRefInput<$PrismaModel>
@@ -13713,6 +13806,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     invites?: WatchlistInviteCreateNestedManyWithoutWatchlistInput
@@ -13724,6 +13818,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     invites?: WatchlistInviteUncheckedCreateNestedManyWithoutWatchlistInput
@@ -13782,8 +13877,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -13801,8 +13896,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -13931,6 +14026,7 @@ export namespace Prisma {
     id?: StringFilter<"Watchlist"> | string
     name?: StringFilter<"Watchlist"> | string
     description?: StringNullableFilter<"Watchlist"> | string | null
+    mediaType?: EnumWatchlistMediaTypeFilter<"Watchlist"> | $Enums.WatchlistMediaType
     ownerId?: StringFilter<"Watchlist"> | string
     createdAt?: DateTimeFilter<"Watchlist"> | Date | string
     updatedAt?: DateTimeFilter<"Watchlist"> | Date | string
@@ -13995,8 +14091,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFilter<"WatchlistItem"> | $Enums.WatchlistItemStatus
     note?: StringFilter<"WatchlistItem"> | string
     title?: StringFilter<"WatchlistItem"> | string
-    director?: StringNullableFilter<"WatchlistItem"> | string | null
-    releaseYear?: IntNullableFilter<"WatchlistItem"> | number | null
+    creditNames?: StringNullableFilter<"WatchlistItem"> | string | null
+    year?: IntNullableFilter<"WatchlistItem"> | number | null
     posterPath?: StringNullableFilter<"WatchlistItem"> | string | null
     backdropPath?: StringNullableFilter<"WatchlistItem"> | string | null
     overview?: StringNullableFilter<"WatchlistItem"> | string | null
@@ -14075,8 +14171,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -14093,8 +14189,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -14291,6 +14387,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     invites?: WatchlistInviteCreateNestedManyWithoutWatchlistInput
@@ -14302,6 +14399,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14366,6 +14464,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invites?: WatchlistInviteUpdateManyWithoutWatchlistNestedInput
@@ -14377,6 +14476,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14419,6 +14519,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: WatchlistItemCreateNestedManyWithoutWatchlistInput
@@ -14430,6 +14531,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14494,6 +14596,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: WatchlistItemUpdateManyWithoutWatchlistNestedInput
@@ -14505,6 +14608,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14547,6 +14651,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
     invites?: WatchlistInviteCreateNestedManyWithoutWatchlistInput
@@ -14558,6 +14663,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     ownerId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14622,6 +14728,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invites?: WatchlistInviteUpdateManyWithoutWatchlistNestedInput
@@ -14633,6 +14740,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     ownerId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14665,6 +14773,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    mediaType: $Enums.WatchlistMediaType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14689,8 +14798,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -14774,6 +14883,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invites?: WatchlistInviteUpdateManyWithoutWatchlistNestedInput
@@ -14785,6 +14895,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     invites?: WatchlistInviteUncheckedUpdateManyWithoutWatchlistNestedInput
@@ -14796,6 +14907,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    mediaType?: EnumWatchlistMediaTypeFieldUpdateOperationsInput | $Enums.WatchlistMediaType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14843,8 +14955,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14862,8 +14974,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14880,8 +14992,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14933,8 +15045,8 @@ export namespace Prisma {
     status?: $Enums.WatchlistItemStatus
     note?: string
     title: string
-    director?: string | null
-    releaseYear?: number | null
+    creditNames?: string | null
+    year?: number | null
     posterPath?: string | null
     backdropPath?: string | null
     overview?: string | null
@@ -14995,8 +15107,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15013,8 +15125,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15031,8 +15143,8 @@ export namespace Prisma {
     status?: EnumWatchlistItemStatusFieldUpdateOperationsInput | $Enums.WatchlistItemStatus
     note?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    director?: NullableStringFieldUpdateOperationsInput | string | null
-    releaseYear?: NullableIntFieldUpdateOperationsInput | number | null
+    creditNames?: NullableStringFieldUpdateOperationsInput | string | null
+    year?: NullableIntFieldUpdateOperationsInput | number | null
     posterPath?: NullableStringFieldUpdateOperationsInput | string | null
     backdropPath?: NullableStringFieldUpdateOperationsInput | string | null
     overview?: NullableStringFieldUpdateOperationsInput | string | null
