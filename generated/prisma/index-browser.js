@@ -197,6 +197,7 @@ exports.Prisma.WatchlistItemScalarFieldEnum = {
   status: 'status',
   note: 'note',
   title: 'title',
+  director: 'director',
   releaseYear: 'releaseYear',
   posterPath: 'posterPath',
   backdropPath: 'backdropPath',

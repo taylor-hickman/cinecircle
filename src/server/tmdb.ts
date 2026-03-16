@@ -13,16 +13,33 @@ type TmdbMovieResult = {
   poster_path: string | null;
   backdrop_path: string | null;
   release_date: string | null;
+  credits?: {
+    crew: Array<{
+      job: string;
+      name: string;
+    }>;
+  };
 };
 
 export type MovieSearchResult = {
   tmdbId: number;
   title: string;
+  director: string | null;
   overview: string;
   posterPath: string | null;
   backdropPath: string | null;
   releaseYear: number | null;
 };
+
+function getDirector(crew: TmdbMovieResult["credits"] = { crew: [] }) {
+  const directors = crew.crew
+    .filter((member) => member.job === "Director")
+    .map((member) => member.name.trim())
+    .filter((name) => name.length > 0);
+
+  const uniqueDirectors = [...new Set(directors)];
+  return uniqueDirectors.length > 0 ? uniqueDirectors.join(", ") : null;
+}
 
 export function mapTmdbMovie(movie: TmdbMovieResult): MovieSearchResult {
   const year = movie.release_date?.slice(0, 4);
@@ -30,6 +47,7 @@ export function mapTmdbMovie(movie: TmdbMovieResult): MovieSearchResult {
   return {
     tmdbId: movie.id,
     title: movie.title,
+    director: getDirector(movie.credits),
     overview: movie.overview,
     posterPath: movie.poster_path,
     backdropPath: movie.backdrop_path,
@@ -81,10 +99,32 @@ export async function searchMovies(query: string) {
     }),
   );
 
-  return payload.results.slice(0, 10).map(mapTmdbMovie);
+  const topResults = payload.results.slice(0, 10).map(mapTmdbMovie);
+  const detailResults = await Promise.allSettled(
+    topResults.map((movie) => getMovieDetails(movie.tmdbId)),
+  );
+
+  return topResults.map((movie, index) => {
+    const detailResult = detailResults[index];
+
+    if (detailResult?.status !== "fulfilled") {
+      return movie;
+    }
+
+    return {
+      ...movie,
+      director: detailResult.value.director,
+    };
+  });
 }
 
 export async function getMovieDetails(tmdbId: number) {
-  const payload = await tmdbFetch<TmdbMovieResult>(`/movie/${tmdbId}`);
+  const payload = await tmdbFetch<TmdbMovieResult>(
+    `/movie/${tmdbId}`,
+    new URLSearchParams({
+      append_to_response: "credits",
+    }),
+  );
+
   return mapTmdbMovie(payload);
 }

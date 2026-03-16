@@ -122,6 +122,7 @@ model WatchlistItem {
   status      WatchlistItemStatus @default(QUEUED)
   note        String              @default("")
   title       String
+  director    String?
   releaseYear Int?
   posterPath  String?
   backdropPath String?
