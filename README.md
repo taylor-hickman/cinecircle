@@ -2,6 +2,8 @@
 
 CineCircle is a collaborative movie watchlist app built on the T3 stack. Users can sign in with Google or email magic links, create private watchlists, invite collaborators by email, search TMDB, and manage a shared queue with notes and watched status.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the human workflow and [AGENTS.md](AGENTS.md) for the repo rules future agents should follow.
+
 ## Stack
 
 - Next.js App Router
@@ -41,10 +43,16 @@ Required secrets for the full app flow:
 - `TMDB_API_KEY`
 - `DATABASE_URL`
 
-4. Sync Prisma with the database:
+Optional: pull shared Vercel env vars for local development:
 
 ```bash
-npm run db:push
+vercel env pull .env.vercel
+```
+
+4. Apply committed Prisma migrations:
+
+```bash
+npm run db:migrate
 ```
 
 5. Start the dev server:
@@ -53,10 +61,19 @@ npm run db:push
 npm run dev
 ```
 
+If you want to load both `.env` and `.env.vercel` locally, use:
+
+```bash
+npm run dev:vercel
+```
+
 ## Useful commands
 
 ```bash
+npm run prisma:generate
+npm run db:dev -- --name <migration-name>
 npm run check
+npm run verify
 npm test
 npm run test:e2e
 npm run build
@@ -67,6 +84,7 @@ npm run build
 ## Production deployment
 
 - Commit and keep the `prisma/migrations` directory in Git so Vercel can run real schema migrations.
+- Commit and keep `generated/prisma` in Git whenever Prisma changes.
 - For Vercel, use:
 
 ```bash
@@ -74,6 +92,7 @@ npm run vercel-build
 ```
 
 - Set `DATABASE_URL` to a pooled PostgreSQL connection string in production. For Supabase, use the Supavisor session pooler rather than the direct `db.<project>.supabase.co:5432` host.
+- Protect `main` in GitHub and require both CI and Vercel preview checks before merge.
 
 ## Product scope
 
