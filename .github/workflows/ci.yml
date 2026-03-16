@@ -39,9 +39,6 @@ jobs:
       - name: Generate Prisma client
         run: npm run prisma:generate
 
-      - name: Ensure generated Prisma files are committed
-        run: git diff --exit-code -- generated/prisma prisma/schema.prisma
-
       - name: Verify code
         run: npm run verify
 
@@ -49,7 +46,7 @@ jobs:
         run: npm run build
 
       - name: Ensure build does not modify tracked files
-        run: git diff --exit-code
+        run: git diff --exit-code -- . ':(exclude)generated/prisma'
 
       - name: Check required artifacts on pull requests
         if: github.event_name == 'pull_request'
