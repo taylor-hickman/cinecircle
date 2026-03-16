@@ -6,14 +6,16 @@
   "scripts": {
     "build": "next build",
     "check": "npm run lint && npm run typecheck",
-    "db:generate": "prisma migrate dev",
+    "db:dev": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev": "next dev --turbo",
+    "dev:vercel": "bash ./scripts/dev-with-vercel-env.sh",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "next build && next start",
@@ -22,6 +24,7 @@
     "test:e2e": "playwright test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "verify": "npm run format:check && npm run check && npm test",
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
